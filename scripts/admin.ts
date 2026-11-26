@@ -24,16 +24,17 @@ async function main() {
   }
 
   if (command === "promote") {
-    const email = process.argv[3];
-    if (!email) {
-      console.error("用法：npm run admin:promote -- <email>");
+    const key = process.argv[3];
+    if (!key) {
+      console.error("用法：npm run admin:promote -- <email或user-id>");
       process.exit(1);
     }
+    const condition = key.includes("@") ? eq(users.email, key) : eq(users.id, key);
     await db
       .update(users)
       .set({ role: "admin", accountType: "employee", status: "active" })
-      .where(eq(users.email, email));
-    console.log(`已将 ${email} 设为管理员`);
+      .where(condition);
+    console.log(`已将 ${key} 设为管理员`);
     return;
   }
 

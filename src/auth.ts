@@ -45,18 +45,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   callbacks: {
-    async signIn({ user, account }) {
-      // TODO: 检查 external_identity 是否已绑定且启用。
-      // 未完成绑定前，先在管理员后台建立账号，再于此处加入白名单判断。
-      if (!user.email) return false;
+    async signIn({ account }) {
+      // LINE 预设不回传 email，不能以此作为准入条件。
+      // TODO: 之后改为检查 external_identity 白名单与启用状态。
       return account?.provider === "line" || account?.provider === "google";
     },
     async jwt({ token, user }) {
-      if (user?.email) {
+      if (user?.id) {
         const [record] = await db
           .select()
           .from(users)
-          .where(eq(users.email, user.email))
+          .where(eq(users.id, user.id))
           .limit(1);
         if (record) {
           token.userId = record.id;
