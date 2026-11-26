@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+:root {
+  --kst-purple: #6d4aff;
+  --kst-ink: #26223d;
+}
+
+body {
+  font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+}
