@@ -8,6 +8,7 @@ import {
   roles,
   systemSettings,
   taxSettings,
+  warehouses,
 } from "../src/db/schema";
 
 async function main() {
@@ -41,6 +42,14 @@ async function main() {
       note: "公司基本留 65%，業務% 以利益為基數，剩餘回公司",
     });
   }
+
+  await db
+    .insert(warehouses)
+    .values([
+      { code: "WH01", name: "公司倉庫" },
+      { code: "WH02", name: "客戶端維修倉" },
+    ])
+    .onConflictDoNothing();
 
   await db
     .insert(systemSettings)

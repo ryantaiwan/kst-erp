@@ -5,18 +5,16 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { eq } from "drizzle-orm";
 import authConfig from "@/auth.config";
 import { db } from "@/db";
-import { accounts, sessions, users, verificationTokens } from "@/db/schema";
+import { accounts, users, verificationTokens } from "@/db/schema";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
-    sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }),
   secret: process.env.AUTH_SECRET,
-  session: { strategy: "database" },
   providers: [
     LINE({
       clientId: process.env.AUTH_LINE_ID ?? "",
@@ -51,18 +49,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return account?.provider === "line" || account?.provider === "google";
     },
     async jwt({ token, user }) {
-      if (user?.id) {
-        const [record] = await db
-          .select()
-          .from(users)
-          .where(eq(users.id, user.id))
-          .limit(1);
-        if (record) {
-          token.userId = record.id;
-          token.accountType = record.accountType;
-          token.role = record.role;
-          token.dataScope = record.dataScope;
-        }
+      // 首次登入時由 adapter 帶入 user，之後以 token.sub 查回最新角色資訊。
+      const userId = user?.id ?? (token.sub as string | undefined);
+      if (!userId) return token;
+
+      const [record] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (record) {
+        token.userId = record.id;
+        token.accountType = record.accountType;
+        token.role = record.role;
+        token.dataScope = record.dataScope;
+      } else {
+        token.userId = userId;
       }
       return token;
     },
@@ -74,10 +72,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           role?: string;
           dataScope?: string | null;
         };
-        u.id = token.userId as string;
+        u.id = (token.userId as string) ?? (token.sub as string);
         u.accountType = token.accountType as string;
         u.role = token.role as string;
-        u.dataScope = token.dataScope as string | null;
+        u.dataScope = (token.dataScope as string | null) ?? null;
       }
       return session;
     },
