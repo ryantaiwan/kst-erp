@@ -20,10 +20,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_LINE_ID ?? "",
       clientSecret: process.env.AUTH_LINE_SECRET ?? "",
     }),
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID ?? "",
-      clientSecret: process.env.AUTH_GOOGLE_SECRET ?? "",
-    }),
+    ...(process.env.AUTH_ENABLE_GOOGLE === "true"
+      ? [
+          Google({
+            clientId: process.env.AUTH_GOOGLE_ID ?? "",
+            clientSecret: process.env.AUTH_GOOGLE_SECRET ?? "",
+          }),
+        ]
+      : []),
   ],
   events: {
     async createUser({ user }) {
