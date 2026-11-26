@@ -4,6 +4,12 @@ import authConfig from "@/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
+/**
+ * Next.js 16 已將 `middleware.ts` 更名為 `proxy.ts`（舊名仍可用但已棄用）。
+ * Proxy 在路由 render 前執行，預設跑在 Node.js runtime。
+ * 職責：擋下未登入者導向 /signin。
+ */
+
 /** 需要登入才能進入的路徑前綴 */
 const PROTECTED = ["/sales", "/purchasing", "/finance", "/master", "/admin"];
 
