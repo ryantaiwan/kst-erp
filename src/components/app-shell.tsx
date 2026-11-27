@@ -19,6 +19,7 @@ import {
   ClipboardList,
   Boxes,
   HandCoins,
+  ChartColumn,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -55,6 +56,7 @@ const groups: NavGroup[] = [
     items: [
       { label: "利潤計算表", href: "/finance/profit", icon: Wallet, feature: "profit" },
       { label: "發票管理", href: "/finance/invoices", icon: ReceiptText, feature: "invoice" },
+      { label: "稅務彙總報表", href: "/finance/tax-summary", icon: ChartColumn, feature: "invoice" },
     ],
   },
   {

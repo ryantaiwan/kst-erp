@@ -20,11 +20,18 @@
 | 总览 | `/` | 客户 / 供应商 / 商品 / 发票 / 应收未收 KPI、最近报价单、待办提醒 |
 | 业务 | `/sales/quotes` `/sales/orders` `/sales/shipments` `/sales/customers` | 报价单（+PDF 下载）、销货订单、出货作业、客户管理 |
 | 采购 | `/purchasing/rfq` `/purchasing/orders` `/purchasing/receiving` | 询价单、采购订单、入库作业（回写库存） |
-| 财务 | `/finance/invoices` `/finance/ap` `/finance/receivables` `/finance/profit` | 销项/进项发票、进项发票对帐、应收帐款与收款登记、利润计算表 |
+| 财务 | `/finance/invoices` `/finance/ap` `/finance/receivables` `/finance/profit` `/finance/tax-summary` | 销项/进项发票、进项发票对帐、应收帐款与收款登记、利润计算与分润结算、税务汇总报表 |
 | 主数据 | `/master/products` `/master/suppliers` `/master/inventory` | 商品、供应商、库存查询与异动纪录 |
 | 管理 | `/admin/accounts` `/admin/permissions` `/admin/settings` | 帐号管理、角色权限矩阵与功能可见范围、税率/分润设定 |
 
 业务流已端对端实测：报价单 → 销货订单 → 出货单 → 销项发票 → 部分收款。
+
+### Phase 3 财务功能
+
+- **分润结算**（`/finance/profit`）：统计卡（总利润 / 公司基本留 / 公司剩余 / 业务分润），依状态筛选（全部 / 未结算 / 已结算），勾选多笔标记已结算，业务% 可在列表中即时调整（走 `calcProfit` 重新计算三份分配），已结算可撤销。
+- **税务汇总**（`/finance/tax-summary`）：依期间筛选销项/进项发票，按状态统计、税额摘要、月度趋势。
+  > 历史汇入资料的 `taxCents` 多为 0（税额内含于金额），报表同时显示「已纪录税额」与「含税金额 × 5% 推估税额」，实际申报请依发票记载为准。
+- **Excel 公式储存格修复**：汇入脚本的 `money()` 读不到 ExcelJS 公式物件 `{ formula, result }`，导致利润表的公司留 / USER 等栏位被当成 0；已新增 `moneyFromCell()` 处理。历史资料中真正有业务分润的笔数本就极少，故不做回填。
 
 ## 关键业务规则
 

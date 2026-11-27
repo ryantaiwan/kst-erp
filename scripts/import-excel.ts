@@ -44,6 +44,21 @@ function money(v: ExcelJS.CellValue | null | undefined): number {
   return Number.isFinite(n) ? Math.round(n * 100) : 0;
 }
 
+/**
+ * 讀取儲存格數值，含 ExcelJS 的公式物件 { formula, result }。
+ * 利潤計算表的公司留/自己/USER/伙伴欄位多為公式，若只用 money()
+ * 會把公式物件當成 0，導致業務分潤與盈餘分配全部流失。
+ */
+function moneyFromCell(v: ExcelJS.CellValue | null | undefined): number {
+  if (v && typeof v === "object" && "result" in v) {
+    const raw = (v as { result: unknown }).result;
+    if (typeof raw === "number" && Number.isFinite(raw)) return Math.round(raw * 100);
+    if (raw === "" || raw === null || raw === undefined) return 0;
+    return money(raw as ExcelJS.CellValue);
+  }
+  return money(v);
+}
+
 function excelDate(v: ExcelJS.CellValue | null | undefined): Date | null {
   if (v === null || v === undefined || v === "") return null;
   if (v instanceof Date) return v;
@@ -231,12 +246,12 @@ async function main() {
       counts.skippedProfit += 1;
       return;
     }
-    const revenue = money(row.getCell(5).value);
-    const cost = money(row.getCell(13).value);
-    const companyBase = money(row.getCell(16).value);
-    const self = money(row.getCell(17).value);
-    const user = money(row.getCell(18).value);
-    const partner = money(row.getCell(19).value);
+    const revenue = moneyFromCell(row.getCell(5).value);
+    const cost = moneyFromCell(row.getCell(13).value);
+    const companyBase = moneyFromCell(row.getCell(16).value);
+    const self = moneyFromCell(row.getCell(17).value);
+    const user = moneyFromCell(row.getCell(18).value);
+    const partner = moneyFromCell(row.getCell(19).value);
     const profit = revenue - cost;
     const salespersonPercent = profit > 0 ? Math.round((user / profit) * 100) : 0;
     if (/\[\d+\/\d+\]/.test(description)) warn(`利潤計算表 列${rowNumber}: 拆行品項 ${description}`);
