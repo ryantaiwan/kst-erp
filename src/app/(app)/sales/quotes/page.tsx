@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { desc } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { customerContacts, customers, quotes } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
+import { SimplePagination } from "@/components/simple-pagination";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { currentTaxRate } from "./actions";
 import { QuoteForm } from "./quote-form";
@@ -26,12 +27,15 @@ const STATUS_TONE: Record<string, string> = {
   expired: "bg-rose-50 text-rose-700",
 };
 
-export default async function QuotesPage() {
+export default async function QuotesPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
   const scope = await getCurrentScope();
-  const [rows, customerRows, contactRows, taxRate] = await Promise.all([
-    db.select().from(quotes)
-      .where(scope.filtered ? eq(quotes.customerId, scope.scopeId!) : undefined)
-      .orderBy(desc(quotes.createdAt)).limit(200),
+  const where = scope.filtered ? eq(quotes.customerId, scope.scopeId!) : undefined;
+  const [rows, countRows, customerRows, contactRows, taxRate] = await Promise.all([
+    db.select().from(quotes).where(where)
+      .orderBy(desc(quotes.createdAt)).limit(20).offset((page - 1) * 20),
+    db.select({ n: sql<number>`count(*)` }).from(quotes).where(where),
     db.select({ id: customers.id, name: customers.name }).from(customers),
     db.select({ id: customerContacts.id, name: customerContacts.name, customerId: customerContacts.customerId }).from(customerContacts),
     currentTaxRate(),
@@ -59,6 +63,7 @@ export default async function QuotesPage() {
         handler="陳孟源(Eason)"
       />
 
+      <SimplePagination page={page} total={countRows[0]?.n ?? 0} basePath="/sales/quotes" />
       <SimpleTable
         rows={rows}
         empty="尚無報價單，請用上方表單建立"

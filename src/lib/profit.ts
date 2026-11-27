@@ -40,9 +40,11 @@ export async function getProfitSummary() {
 
 export type ProfitFilter = "all" | "settled" | "unsettled";
 
-export async function getProfitRecords(filter: ProfitFilter = "all", limit = 100) {
-  const base = db.select().from(profitRecords);
-
+export async function getProfitRecords(
+  filter: ProfitFilter = "all",
+  page = 1,
+  pageSize = 20,
+) {
   const where =
     filter === "settled"
       ? isNotNull(profitRecords.settledAt)
@@ -50,9 +52,21 @@ export async function getProfitRecords(filter: ProfitFilter = "all", limit = 100
         ? isNull(profitRecords.settledAt)
         : undefined;
 
-  return where
-    ? base.where(where).orderBy(desc(profitRecords.createdAt)).limit(limit)
-    : base.orderBy(desc(profitRecords.createdAt)).limit(limit);
+  return db.select().from(profitRecords).where(where)
+    .orderBy(desc(profitRecords.createdAt))
+    .limit(pageSize).offset((page - 1) * pageSize);
+}
+
+/** 依狀態取得利潤紀錄筆數（供分頁用） */
+export async function getProfitRecordsCount(filter: ProfitFilter = "all"): Promise<number> {
+  const where =
+    filter === "settled"
+      ? isNotNull(profitRecords.settledAt)
+      : filter === "unsettled"
+        ? isNull(profitRecords.settledAt)
+        : undefined;
+  const [row] = await db.select({ n: sql<number>`count(*)` }).from(profitRecords).where(where);
+  return row?.n ?? 0;
 }
 
 /** 取得尚未結算且有業務分潤的紀錄（供結算作業使用） */

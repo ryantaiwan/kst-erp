@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { customers, invoices, receivablePayments } from "@/db/schema";
 import { getCurrentScope } from "@/lib/scope";
@@ -18,7 +18,13 @@ export type ReceivableRow = {
 };
 
 /** 取得應收帳款明細：銷項發票 + 已收款金額 + 逾期天數 */
-export async function getReceivables(): Promise<ReceivableRow[]> {
+export async function getReceivables(options?: {
+  from?: Date;
+  to?: Date;
+  page?: number;
+  pageSize?: number;
+}): Promise<ReceivableRow[]> {
+  const { from, to, page = 1, pageSize = 20 } = options ?? {};
   const scope = await getCurrentScope();
   const outputInvoices = await db
     .select()
@@ -26,9 +32,11 @@ export async function getReceivables(): Promise<ReceivableRow[]> {
     .where(and(
       inArray(invoices.type, ["output"]),
       scope.filtered ? eq(invoices.partyId, scope.scopeId!) : undefined,
+      from ? gte(invoices.invoiceDate, from) : undefined,
+      to ? lt(invoices.invoiceDate, to) : undefined,
     ))
     .orderBy(desc(invoices.invoiceDate))
-    .limit(500);
+    .limit(pageSize).offset((page - 1) * pageSize);
 
   if (outputInvoices.length === 0) return [];
 
@@ -65,4 +73,20 @@ export async function getReceivables(): Promise<ReceivableRow[]> {
       overdue: due > 0 && delayDays > 30,
     };
   });
+}
+
+/** 取得應收帳款總筆數（供分頁用） */
+export async function getReceivablesCount(options?: { from?: Date; to?: Date }): Promise<number> {
+  const { from, to } = options ?? {};
+  const scope = await getCurrentScope();
+  const [row] = await db
+    .select({ n: sql<number>`count(*)` })
+    .from(invoices)
+    .where(and(
+      inArray(invoices.type, ["output"]),
+      scope.filtered ? eq(invoices.partyId, scope.scopeId!) : undefined,
+      from ? gte(invoices.invoiceDate, from) : undefined,
+      to ? lt(invoices.invoiceDate, to) : undefined,
+    ));
+  return row?.n ?? 0;
 }

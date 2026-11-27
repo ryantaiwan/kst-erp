@@ -4,8 +4,9 @@ import { db } from "@/db";
 import { profitRecords } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
+import { SimplePagination } from "@/components/simple-pagination";
 import { formatDate, formatMoney } from "@/lib/utils";
-import { getProfitRecords, getProfitSummary, getUnsettledWithCommission, type ProfitFilter } from "@/lib/profit";
+import { getProfitRecords, getProfitRecordsCount, getProfitSummary, getUnsettledWithCommission, type ProfitFilter } from "@/lib/profit";
 import { SettlementForm } from "./settlement-form";
 
 export const instant = false;
@@ -13,16 +14,18 @@ export const instant = false;
 export default async function ProfitPage({
   searchParams,
 }: {
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; page?: string }>;
 }) {
-  const { filter: raw } = await searchParams;
+  const { filter: raw, page: pageParam } = await searchParams;
   const filter: ProfitFilter =
     raw === "settled" || raw === "unsettled" ? raw : "all";
+  const page = Math.max(1, Number(pageParam) || 1);
 
-  const [rows, summary, unsettled] = await Promise.all([
-    getProfitRecords(filter, 100),
+  const [rows, summary, unsettled, total] = await Promise.all([
+    getProfitRecords(filter, page, 20),
     getProfitSummary(),
     getUnsettledWithCommission(500),
+    getProfitRecordsCount(filter),
   ]);
 
   return (
@@ -51,9 +54,9 @@ export default async function ProfitPage({
 
       <div className="mb-3 flex items-center justify-between">
         <div className="flex gap-2 text-[12px]">
-          <FilterLink href="/finance/profit?filter=all" active={filter === "all"}>全部</FilterLink>
-          <FilterLink href="/finance/profit?filter=unsettled" active={filter === "unsettled"}>未結算</FilterLink>
-          <FilterLink href="/finance/profit?filter=settled" active={filter === "settled"}>已結算</FilterLink>
+          <FilterLink href="/finance/profit?filter=all&page=1" active={filter === "all"}>全部</FilterLink>
+          <FilterLink href="/finance/profit?filter=unsettled&page=1" active={filter === "unsettled"}>未結算</FilterLink>
+          <FilterLink href="/finance/profit?filter=settled&page=1" active={filter === "settled"}>已結算</FilterLink>
         </div>
         <span className="text-[11px] text-[#9b96b0]">顯示最近 100 筆</span>
       </div>
@@ -68,6 +71,7 @@ export default async function ProfitPage({
       {filter === "settled" && <SettledList />}
 
       <div className="mb-3 mt-6 text-sm font-semibold text-[#26223d]">利潤明細</div>
+      <SimplePagination page={page} total={total} basePath="/finance/profit" extraFilters={{ filter: filter === "all" ? undefined : filter }} />
       <SimpleTable
         rows={rows}
         empty="尚無利潤資料"

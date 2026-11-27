@@ -1,15 +1,27 @@
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
+import { RecordBrowser } from "@/components/record-browser";
 import { formatDate, formatMoney } from "@/lib/utils";
-import { getReceivables } from "@/lib/receivables";
+import { getReceivables, getReceivablesCount } from "@/lib/receivables";
+import { getYearsFrom, parsePeriod, type PeriodParams } from "@/lib/period";
 import { PaymentForm } from "./payment-form";
 import { ReminderButton } from "./reminder-button";
 
 export const instant = false;
 
-export default async function ReceivablesPage() {
-  const rows = await getReceivables();
-  const outstanding = rows.filter((r) => r.dueCents > 0);
+export default async function ReceivablesPage({ searchParams }: { searchParams: Promise<PeriodParams> }) {
+  const params = await searchParams;
+  const { from, to, page } = parsePeriod(params);
+
+  // 統計與收款表單用全部資料（不受期間篩選影響），明細表才分頁
+  const [allRows, rows, total, years] = await Promise.all([
+    getReceivables(),
+    getReceivables({ from, to, page }),
+    getReceivablesCount({ from, to }),
+    getYearsFrom("invoice", "invoice_date"),
+  ]);
+
+  const outstanding = allRows.filter((r) => r.dueCents > 0);
   const overdue = outstanding.filter((r) => r.overdue);
   const totalDue = outstanding.reduce((s, r) => s + r.dueCents, 0);
   const totalOverdue = overdue.reduce((s, r) => s + r.dueCents, 0);
@@ -18,9 +30,9 @@ export default async function ReceivablesPage() {
     <>
       <PageHeader
         title="應收帳款"
-        subtitle="銷項發票未收款金額 · 逾期定義為距開立日超過 30 天"
+        subtitle="銷項發票未收款金額 · 逾期定義為距開立日超過 30 天 · 依年度與雙月期別瀏覽"
         right={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Stat label="未收款筆數" value={`${outstanding.length}`} tone="text-[#26223d]" />
             <Stat label="未收款總額" value={formatMoney(totalDue)} tone="text-[#5538d6]" />
             <Stat label="逾期金額" value={formatMoney(totalOverdue)} tone="text-[#e05a5a]" />
@@ -31,6 +43,8 @@ export default async function ReceivablesPage() {
       <PaymentForm invoices={outstanding.map((r) => ({ id: r.invoice.id, no: r.invoice.invoiceNo, due: r.dueCents }))} />
 
       <div className="mb-3 mt-6 text-sm font-semibold text-[#26223d]">應收明細</div>
+      <RecordBrowser years={years} params={params} total={total} basePath="/finance/receivables" />
+
       <SimpleTable
         rows={rows}
         empty="尚無銷項發票"
@@ -55,9 +69,7 @@ export default async function ReceivablesPage() {
             render: (r) => (
               r.dueCents > 0 ? (
                 <span className={r.overdue ? "font-medium text-[#e05a5a]" : "text-[#57536e]"}>{r.delayDays} 天</span>
-              ) : (
-                "—"
-              )
+              ) : "—"
             ),
           },
           { key: "status", label: "狀態", render: (r) => r.invoice.status },

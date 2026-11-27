@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { invoices, suppliers } from "@/db/schema";
 
@@ -66,16 +66,30 @@ export type InputInvoiceSummary = {
 };
 
 /** 取得進項發票對帳明細 */
-export async function getInputInvoices(): Promise<InputInvoiceSummary> {
-  const rows = await db
-    .select()
-    .from(invoices)
-    .where(eq(invoices.type, "input"))
-    .orderBy(desc(invoices.invoiceDate))
-    .limit(500);
+export async function getInputInvoices(options?: {
+  from?: Date;
+  to?: Date;
+  page?: number;
+  pageSize?: number;
+}): Promise<InputInvoiceSummary & { total: number }> {
+  const { from, to, page = 1, pageSize = 20 } = options ?? {};
+  const conditions = [
+    eq(invoices.type, "input"),
+    from ? gte(invoices.invoiceDate, from) : undefined,
+    to ? lt(invoices.invoiceDate, to) : undefined,
+  ].filter(Boolean);
+  const where = and(...conditions);
+
+  const [rows, countRows] = await Promise.all([
+    db.select().from(invoices).where(where)
+      .orderBy(desc(invoices.invoiceDate))
+      .limit(pageSize).offset((page - 1) * pageSize),
+    db.select({ n: sql<number>`count(*)` }).from(invoices).where(where),
+  ]);
+  const recordCount = countRows[0]?.n ?? 0;
 
   if (rows.length === 0) {
-    return { rows: [], totalCents: 0, paidCents: 0, unpaidCents: 0 };
+    return { rows: [], totalCents: 0, paidCents: 0, unpaidCents: 0, total: recordCount };
   }
 
   const partyIds = Array.from(new Set(rows.map((r) => r.partyId).filter(Boolean))) as string[];
@@ -95,5 +109,6 @@ export async function getInputInvoices(): Promise<InputInvoiceSummary> {
     totalCents: total,
     paidCents: paid,
     unpaidCents: total - paid,
+    total: recordCount,
   };
 }

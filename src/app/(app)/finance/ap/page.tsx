@@ -2,23 +2,30 @@ import { db } from "@/db";
 import { suppliers } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
+import { RecordBrowser } from "@/components/record-browser";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { getYearsFrom, parsePeriod, type PeriodParams } from "@/lib/period";
 import { getInputInvoices } from "./actions";
 import { ApForm } from "./ap-form";
 
 export const instant = false;
 
-export default async function ApPage() {
-  const data = await getInputInvoices();
-  const supplierRows = await db.select({ id: suppliers.id, name: suppliers.name }).from(suppliers);
+export default async function ApPage({ searchParams }: { searchParams: Promise<PeriodParams> }) {
+  const params = await searchParams;
+  const { from, to, page } = parsePeriod(params);
+  const [data, supplierRows, years] = await Promise.all([
+    getInputInvoices({ from, to, page }),
+    db.select({ id: suppliers.id, name: suppliers.name }).from(suppliers),
+    getYearsFrom("invoice", "invoice_date"),
+  ]);
 
   return (
     <>
       <PageHeader
         title="進項發票對帳"
-        subtitle="進項發票登錄與付款狀態核對 · 稅率依系統設定"
+        subtitle="進項發票登錄與付款狀態核對 · 依年度與雙月期別瀏覽 · 每頁 20 筆"
         right={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Stat label="進項總額" value={formatMoney(data.totalCents)} tone="text-[#26223d]" />
             <Stat label="已付款" value={formatMoney(data.paidCents)} tone="text-[#06c755]" />
             <Stat label="未付款" value={formatMoney(data.unpaidCents)} tone="text-[#e05a5a]" />
@@ -28,7 +35,9 @@ export default async function ApPage() {
 
       <ApForm suppliers={supplierRows} />
 
-      <div className="mb-3 mt-6 text-sm font-semibold text-[#26223d]">進項發票明細</div>
+      <RecordBrowser years={years} params={params} total={data.total} basePath="/finance/ap" />
+
+      <div className="mb-3 text-sm font-semibold text-[#26223d]">進項發票明細</div>
       <SimpleTable
         rows={data.rows}
         empty="尚無進項發票"
@@ -39,11 +48,7 @@ export default async function ApPage() {
           { key: "amount", label: "金額", render: (r) => formatMoney(r.invoice.amountCents) },
           { key: "tax", label: "稅金", render: (r) => formatMoney(r.invoice.taxCents) },
           { key: "status", label: "狀態", render: (r) => r.invoice.status },
-          {
-            key: "paidAt",
-            label: "付款日",
-            render: (r) => formatDate(r.invoice.paidAt),
-          },
+          { key: "paidAt", label: "付款日", render: (r) => formatDate(r.invoice.paidAt) },
         ]}
       />
     </>
