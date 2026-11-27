@@ -109,7 +109,7 @@ export default async function Home() {
               <span className="font-medium text-[#26223d]">{receivables.filter((r) => r.dueCents > 0).length}</span>
             </li>
           </ul>
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Link
               href="/sales/quotes"
               className="rounded-lg bg-[#6d4aff] px-3 py-2 text-center text-[11px] text-white no-underline"

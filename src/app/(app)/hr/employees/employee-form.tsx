@@ -35,7 +35,7 @@ export function EmployeeForm({ departments }: { departments: Dept[] }) {
               }
             });
           }}
-          className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4"
+          className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
         >
           <label className={label}>員工編號 *<input name="employeeNo" required className={`mt-1 ${field}`} /></label>
           <label className={label}>姓名 *<input name="name" required className={`mt-1 ${field}`} /></label>

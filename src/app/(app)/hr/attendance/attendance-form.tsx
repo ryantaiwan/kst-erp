@@ -35,7 +35,7 @@ export function AttendanceForm({ employees }: { employees: Emp[] }) {
               }
             });
           }}
-          className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4"
+          className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
         >
           <label className={label}>
             員工 *

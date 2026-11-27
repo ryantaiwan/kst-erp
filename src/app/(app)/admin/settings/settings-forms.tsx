@@ -39,7 +39,7 @@ export function TaxSettingsForm({ taxes }: { taxes: Tax[] }) {
         ))}
       </div>
 
-      <form action={(fd) => run(() => createTaxSetting(fd), "已新增稅率")} className="mt-4 grid grid-cols-2 gap-2 border-t border-[#f1eff7] pt-4 md:grid-cols-4">
+      <form action={(fd) => run(() => createTaxSetting(fd), "已新增稅率")} className="mt-4 grid grid-cols-1 gap-2 border-t border-[#f1eff7] pt-4 sm:grid-cols-2 lg:grid-cols-4">
         <label className={label}>新稅率 (%)<input name="percent" type="number" step="0.01" placeholder="5" className={`mt-1 ${field}`} /></label>
         <label className={label}>開始日期<input name="startDate" type="date" className={`mt-1 ${field}`} /></label>
         <label className={label}>備註<input name="note" className={`mt-1 ${field}`} /></label>
@@ -56,7 +56,7 @@ export function ProfitRuleForm({ percent, effectiveDate }: { percent: number; ef
     <div className="rounded-xl border border-[#e9e6f3] bg-white p-5">
       <h2 className="text-sm font-semibold">分潤規則</h2>
       <p className="mt-1 text-[11px] text-[#9b96b0]">公司基本留 · 業務% 每筆輸入（以利潤為基數）· 剩餘回公司</p>
-      <form action={(fd) => run(() => saveProfitRule(fd))} className="mt-4 grid grid-cols-2 gap-3">
+      <form action={(fd) => run(() => saveProfitRule(fd))} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className={label}>公司基本留 (%)<input name="companyBasePercent" type="number" min="0" max="100" defaultValue={percent} className={`mt-1 ${field}`} /></label>
         <label className={label}>生效日期<input name="effectiveDate" type="date" defaultValue={effectiveDate} className={`mt-1 ${field}`} /></label>
         <label className={`${label} col-span-2`}>備註<input name="note" className={`mt-1 ${field}`} /></label>
@@ -81,7 +81,7 @@ export function CompanySettingsForm({ settings }: { settings: Record<string, str
     <div className="rounded-xl border border-[#e9e6f3] bg-white p-5">
       <h2 className="text-sm font-semibold">公司資料</h2>
       <p className="mt-1 text-[11px] text-[#9b96b0]">用於報價單 PDF 抬頭與頁尾</p>
-      <form action={(fd) => run(() => updateCompanySettings(fd))} className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3">
+      <form action={(fd) => run(() => updateCompanySettings(fd))} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {keys.map(([key, name]) => (
           <label key={key} className={label}>{name}<input name={key} defaultValue={settings[key] ?? ""} className={`mt-1 ${field}`} /></label>
         ))}

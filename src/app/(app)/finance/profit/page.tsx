@@ -39,7 +39,7 @@ export default async function ProfitPage({
         }
       />
 
-      <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatBox label="公司基本留" value={formatMoney(summary.companyBaseCents)} />
         <StatBox label="公司剩餘" value={formatMoney(summary.remainderCents)} />
         <StatBox label="業務分潤（累計）" value={formatMoney(summary.salespersonCents)} />

@@ -20,3 +20,5 @@ next-env.d.ts
 local.db
 
 .build*/
+
+.playwright-cli/

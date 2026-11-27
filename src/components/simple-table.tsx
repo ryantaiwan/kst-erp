@@ -15,7 +15,7 @@ export function SimpleTable<T>({ columns, rows, empty }: { columns: Column<T>[];
 
   return (
     <div className="overflow-x-auto rounded-xl border border-[#e9e6f3] bg-white">
-      <table className="w-full text-[12px]">
+      <table className="w-full min-w-max text-[12px]">
         <thead>
           <tr className="bg-[#fbfaff] text-left text-[#9b96b0]">
             {columns.map((c) => (

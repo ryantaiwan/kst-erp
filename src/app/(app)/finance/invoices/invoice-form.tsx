@@ -14,7 +14,7 @@ export function InvoiceForm() {
         {open ? "收合表單" : "＋ 新增發票"}
       </button>
       {open && (
-        <form action={(fd) => { setMsg(""); startTransition(async () => { try { await createInvoice(fd); setOpen(false); } catch (e) { setMsg(e instanceof Error ? e.message : "新增失敗"); } }); }} className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+        <form action={(fd) => { setMsg(""); startTransition(async () => { try { await createInvoice(fd); setOpen(false); } catch (e) { setMsg(e instanceof Error ? e.message : "新增失敗"); } }); }} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label className="text-xs text-[#8c88a6]">發票號碼 *<input name="invoiceNo" required className={`mt-1 ${field}`} /></label>
           <label className="text-xs text-[#8c88a6]">類型 *<select name="type" className={`mt-1 ${field}`}><option value="output">銷項</option><option value="input">進項</option></select></label>
           <label className="text-xs text-[#8c88a6]">發票日期 *<input name="invoiceDate" type="date" required className={`mt-1 ${field}`} /></label>

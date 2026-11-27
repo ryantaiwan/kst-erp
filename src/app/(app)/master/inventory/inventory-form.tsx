@@ -14,7 +14,7 @@ export function InventoryForm({ products, warehouses }: { products: { id: string
         {open ? "收合表單" : "＋ 調整庫存"}
       </button>
       {open && (
-        <form action={(fd) => { setMessage(""); startTransition(async () => { try { await adjustInventory(fd); setOpen(false); } catch (e) { setMessage(e instanceof Error ? e.message : "調整失敗"); } }); }} className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+        <form action={(fd) => { setMessage(""); startTransition(async () => { try { await adjustInventory(fd); setOpen(false); } catch (e) { setMessage(e instanceof Error ? e.message : "調整失敗"); } }); }} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label className="text-xs text-[#8c88a6]">商品 *
             <select name="productId" required className={`mt-1 ${field}`}>
               {products.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>)}

@@ -53,7 +53,7 @@ export function MasterForm({
               }
             });
           }}
-          className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4"
+          className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
         >
           {record?.id && <input type="hidden" name="id" value={record.id} />}
           {fields.map((f) => (

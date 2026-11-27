@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/page-header";
 import { ACCOUNT_TYPES, LEVELS, MODULES } from "@/lib/permissions";
 import { getPermissionMatrix } from "./actions";
 import { PermissionMatrix } from "./permission-matrix";
+import { PermissionGuide } from "./permission-guide";
 
 export const instant = false;
 
@@ -15,6 +16,7 @@ export default async function PermissionsPage() {
         subtitle="角色權限矩陣與各帳號類型的功能可見範圍 · 未授權功能不會顯示於選單"
       />
 
+      <PermissionGuide />
       <PermissionMatrix
         modules={MODULES}
         accountTypes={ACCOUNT_TYPES}

@@ -8,3 +8,20 @@
 body {
   font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
 }
+
+/*
+ * 統一表單控制項高度：所有 input / select 一律 36px。
+ * 元件上的 px utility 仍可調整水平留白，但高度一致。
+ * checkbox / radio / hidden / range / color 除外，避免破壞原生行為。
+ */
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="color"]),
+  select {
+    height: 2.25rem;
+    line-height: 2.25rem;
+  }
+
+  textarea {
+    min-height: 2.25rem;
+  }
+}

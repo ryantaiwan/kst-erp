@@ -103,7 +103,7 @@ export default async function TaxSummaryPage({
 
       <div className="mb-3 rounded-xl border border-[#e9e6f3] bg-white p-4">
         <div className="mb-3 text-sm font-semibold text-[#26223d]">稅額摘要</div>
-        <div className="grid grid-cols-2 gap-4 text-[12px] md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 text-[12px] sm:grid-cols-2 lg:grid-cols-4">
           <KV label="已紀錄銷項稅額" value={formatMoney(output.tax)} />
           <KV label="已紀錄進項稅額" value={formatMoney(input.tax)} />
           <KV label="推估銷項稅額 (5%)" value={formatMoney(estimatedOutputTax)} />

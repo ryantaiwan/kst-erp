@@ -18,7 +18,7 @@ export default async function HrHomePage() {
   return (
     <>
       <PageHeader title="人資模組" subtitle="選取下方功能進入 · 僅員工帳號可見" />
-      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Card label="員工總數" value={`${summary.employeeCount}`} sub={`在職 ${summary.activeCount}`} />
         <Card label="月薪總額" value={formatMoney(summary.salaryCents)} sub="在職員工" />
         <Card label="出勤紀錄" value={`${summary.attendanceCount}`} sub={`加班 ${summary.overtimeHours} h`} />

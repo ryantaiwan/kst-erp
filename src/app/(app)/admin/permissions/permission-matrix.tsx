@@ -48,8 +48,9 @@ export function PermissionMatrix({
           <h2 className="text-sm font-semibold text-[#26223d]">角色權限矩陣</h2>
           {pending ? <span className="text-[10px] text-[#9b96b0]">儲存中…</span> : null}
         </div>
-        <p className="mb-4 text-[11px] text-[#9b96b0]">
-          勾選代表該角色可讀（read）或可寫（write）該模組
+        <p className="mb-4 text-[11px] leading-5 text-[#9b96b0]">
+          勾選「讀」代表該角色可查看此模組，勾選「寫」代表可新增 / 修改。<b>直接點方塊即可變更，不需按儲存</b>。
+          <br />此表目前主要作為角色記錄，寫入操作的強制檢查仍在陸續補上。
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-[11px]">
@@ -98,8 +99,9 @@ export function PermissionMatrix({
 
       <section className="rounded-xl border border-[#e9e6f3] bg-white p-5">
         <h2 className="mb-1 text-sm font-semibold text-[#26223d]">功能可見範圍</h2>
-        <p className="mb-4 text-[11px] text-[#9b96b0]">
-          依帳號類型（員工 / 客戶 / 廠商）設定功能可見程度 · 遮蔽者完全不顯示於選單
+        <p className="mb-4 text-[11px] leading-5 text-[#9b96b0]">
+          下拉選擇各帳號類型能看到的功能程度。<b>選「遮蔽」該功能就不會出現在左側選單</b>，選完立即生效。
+          <br />客戶 / 廠商只會看到與自己相關的資料；員工預設看到全部功能，不受此表限制。
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-[11px]">
