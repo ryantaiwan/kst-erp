@@ -22,6 +22,7 @@
 | 采购 | `/purchasing/rfq` `/purchasing/orders` `/purchasing/receiving` | 询价单、采购订单、入库作业（回写库存） |
 | 财务 | `/finance/invoices` `/finance/ap` `/finance/receivables` `/finance/profit` `/finance/tax-summary` | 销项/进项发票、进项发票对帐、应收帐款与收款登记、利润计算与分润结算、税务汇总报表 |
 | 主数据 | `/master/products` `/master/suppliers` `/master/inventory` | 商品、供应商、库存查询与异动纪录 |
+| 人资 | `/hr` `/hr/employees` `/hr/departments` `/hr/attendance` `/hr/leaves` | 员工主档、部门组织、出勤纪录、请假申请与核准 |
 | 管理 | `/admin/accounts` `/admin/permissions` `/admin/settings` | 帐号管理、角色权限矩阵与功能可见范围、税率/分润设定 |
 
 业务流已端对端实测：报价单 → 销货订单 → 出货单 → 销项发票 → 部分收款。
@@ -124,6 +125,16 @@ LINE Login 回调网址须设为：`https://kst-erp.vercel.app/api/auth/callback
 `package.json` 的 `overrides` 将间接依赖提升至安全版本（`esbuild >= 0.25.12`、`uuid ^11.1.1`、`zod ^4.6.7`），`npm audit` 为 **0 vulnerabilities**。
 
 ## 资料汇入
+
+## 人资模组（Phase 4）
+
+四张新表：`department`、`employee`、`attendance_record`、`leave_request`，由 `drizzle/0001_hr_module.sql` 建立（已套用至远端 Turso）。
+
+- 员工主档与登入账号 `users` 可选配关联（`userId`），薪资等敏感栏位独立于账号表。
+- 员工状态：`active`（在职）/ `on_leave`（留职停薪）/ `resigned`（离职）；设为离职时自动写入 `leaveDate`。
+- 出勤类型：正常 / 迟到 / 早退 / 旷职 / 出差 / 假日加班，可记工作与加班时数。
+- 请假类型：特休 / 事假 / 病假 / 婚假 / 丧假 / 产假 / 陪产假 / 补休；待审核 → 核准/驳回/取消，核准后时数计入统计。
+- `/hr/*` 已加入 `proxy.ts` 保护清单，未登入一律 307 导 `/signin`；菜单 feature key 为 `hr`。
 
 `npm run db:import` 会读取：
 

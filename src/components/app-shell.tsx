@@ -60,6 +60,15 @@ const groups: NavGroup[] = [
     ],
   },
   {
+    label: "人資模組",
+    items: [
+      { label: "員工管理", href: "/hr/employees", icon: Users, feature: "hr" },
+      { label: "部門管理", href: "/hr/departments", icon: Boxes, feature: "hr" },
+      { label: "出勤紀錄", href: "/hr/attendance", icon: ClipboardList, feature: "hr" },
+      { label: "請假管理", href: "/hr/leaves", icon: FileText, feature: "hr" },
+    ],
+  },
+  {
     label: "管理介面",
     items: [
       { label: "商品管理", href: "/master/products", icon: Package, feature: "inventory" },

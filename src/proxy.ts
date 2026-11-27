@@ -11,7 +11,7 @@ const { auth } = NextAuth(authConfig);
  */
 
 /** 需要登入才能進入的路徑前綴 */
-const PROTECTED = ["/sales", "/purchasing", "/finance", "/master", "/admin"];
+const PROTECTED = ["/sales", "/purchasing", "/finance", "/master", "/admin", "/hr"];
 
 /** 不需登入即可進入的路徑 */
 const PUBLIC = ["/signin", "/api/auth"];
@@ -41,5 +41,6 @@ export const config = {
     "/finance/:path*",
     "/master/:path*",
     "/admin/:path*",
+    "/hr/:path*",
   ],
 };

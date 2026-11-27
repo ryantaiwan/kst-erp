@@ -406,3 +406,61 @@ export const attachments = sqliteTable("attachment", {
   uploadedBy: text("uploaded_by"),
   createdAt: createdAt(),
 });
+
+/* ---------- 人資模組（Phase 4） ---------- */
+
+export const departments = sqliteTable("department", {
+  id: id(),
+  code: text("code").notNull().unique(),
+  name: text("name").notNull(),
+  parentId: text("parent_id"),
+  managerEmployeeId: text("manager_employee_id"),
+  note: text("note"),
+  createdAt: createdAt(),
+});
+
+export const employees = sqliteTable("employee", {
+  id: id(),
+  userId: text("user_id").references(() => users.id),
+  employeeNo: text("employee_no").notNull().unique(),
+  name: text("name").notNull(),
+  departmentId: text("department_id").references(() => departments.id),
+  title: text("title"),
+  email: text("email"),
+  phone: text("phone"),
+  nationalId: text("national_id"),
+  birthDate: integer("birth_date", { mode: "timestamp" }),
+  hireDate: integer("hire_date", { mode: "timestamp" }).notNull(),
+  leaveDate: integer("leave_date", { mode: "timestamp" }),
+  salaryCents: integer("salary_cents").notNull().default(0),
+  status: text("status").notNull().default("active"), // active | on_leave | resigned
+  note: text("note"),
+  createdAt: createdAt(),
+});
+
+export const attendanceRecords = sqliteTable("attendance_record", {
+  id: id(),
+  employeeId: text("employee_id").notNull().references(() => employees.id, { onDelete: "cascade" }),
+  date: integer("date", { mode: "timestamp" }).notNull(),
+  type: text("type").notNull().default("normal"), // normal | late | early_leave | absent | business_trip | holiday_work
+  checkIn: text("check_in"),   // HH:mm
+  checkOut: text("check_out"), // HH:mm
+  hours: integer("hours").notNull().default(0),        // 工作時數（整數分鐘亦可，這裡用小時）
+  overtimeHours: integer("overtime_hours").notNull().default(0),
+  note: text("note"),
+  createdAt: createdAt(),
+});
+
+export const leaveRequests = sqliteTable("leave_request", {
+  id: id(),
+  employeeId: text("employee_id").notNull().references(() => employees.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // 特休 | 事假 | 病假 | 婚假 | 喪假 | 產假 | 陪產假 | 補休
+  startDate: integer("start_date", { mode: "timestamp" }).notNull(),
+  endDate: integer("end_date", { mode: "timestamp" }).notNull(),
+  hours: integer("hours").notNull().default(0),
+  reason: text("reason"),
+  status: text("status").notNull().default("pending"), // pending | approved | rejected | cancelled
+  approvedBy: text("approved_by"),
+  approvedAt: integer("approved_at", { mode: "timestamp" }),
+  createdAt: createdAt(),
+});
