@@ -151,12 +151,11 @@ export function QuoteForm({
             <tr key={i}>
               <td className="py-1 text-[#9b96b0]">{i + 1}</td>
               <td className="py-1 pr-2">
-                <textarea
+                <input
                   value={r.description}
                   onChange={(e) => update(i, "description", e.target.value)}
-                  rows={1}
-                  placeholder="例：HITECH-PWS 系列人機介面&#10;Model: PWS6A00T-P"
-                  className="w-full resize-y rounded-lg border border-[#e9e6f3] px-2 py-1.5 text-xs text-[#26223d]"
+                  placeholder="例：HITECH-PWS 系列人機介面 PWS6A00T-P"
+                  className="w-full rounded-lg border border-[#e9e6f3] px-2 py-1.5 text-xs text-[#26223d]"
                 />
               </td>
               <td className="py-1 pr-2">
