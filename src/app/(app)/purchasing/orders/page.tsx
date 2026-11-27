@@ -5,6 +5,9 @@ import { purchaseOrderItems, purchaseOrders, suppliers } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { ReceivePartial } from "./receive-partial";
+import { getCurrentScope } from "@/lib/scope";
+import { eq } from "drizzle-orm";
 
 export const instant = false;
 
@@ -42,8 +45,11 @@ async function createPurchaseOrder(formData: FormData) {
 }
 
 export default async function PurchaseOrdersPage() {
+  const scope = await getCurrentScope();
   const [rows, supplierRows] = await Promise.all([
-    db.select().from(purchaseOrders).orderBy(desc(purchaseOrders.createdAt)).limit(100),
+    db.select().from(purchaseOrders)
+      .where(scope.filtered ? eq(purchaseOrders.supplierId, scope.scopeId!) : undefined)
+      .orderBy(desc(purchaseOrders.createdAt)).limit(100),
     db.select().from(suppliers),
   ]);
 
@@ -82,6 +88,7 @@ export default async function PurchaseOrdersPage() {
           { key: "date", label: "建立日", render: (r) => formatDate(r.createdAt) },
           { key: "total", label: "金額", render: (r) => formatMoney(r.totalCents) },
           { key: "status", label: "狀態", render: (r) => r.status },
+          { key: "recv", label: "入庫", render: (r) => <ReceivePartial orderId={r.id} /> },
         ]}
       />
     </>

@@ -1,6 +1,7 @@
-import { desc, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { customers, invoices, receivablePayments } from "@/db/schema";
+import { getCurrentScope } from "@/lib/scope";
 
 /**
  * 應收帳款的純資料查詢層（不含 Server Action API）。
@@ -18,10 +19,14 @@ export type ReceivableRow = {
 
 /** 取得應收帳款明細：銷項發票 + 已收款金額 + 逾期天數 */
 export async function getReceivables(): Promise<ReceivableRow[]> {
+  const scope = await getCurrentScope();
   const outputInvoices = await db
     .select()
     .from(invoices)
-    .where(inArray(invoices.type, ["output"]))
+    .where(and(
+      inArray(invoices.type, ["output"]),
+      scope.filtered ? eq(invoices.partyId, scope.scopeId!) : undefined,
+    ))
     .orderBy(desc(invoices.invoiceDate))
     .limit(500);
 

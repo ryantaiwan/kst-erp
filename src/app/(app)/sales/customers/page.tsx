@@ -1,8 +1,10 @@
-import { like, or } from "drizzle-orm";
+import { and, eq, like, or } from "drizzle-orm";
 import { db } from "@/db";
 import { customers } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
+import { CustomerForm } from "./customer-form";
+import { getCurrentScope } from "@/lib/scope";
 
 export const instant = false;
 
@@ -12,13 +14,15 @@ export default async function CustomersPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const scope = await getCurrentScope();
   const rows = await db
     .select()
     .from(customers)
     .where(
-      q
-        ? or(like(customers.name, `%${q}%`), like(customers.code, `%${q}%`), like(customers.taxId, `%${q}%`))
-        : undefined,
+      and(
+        scope.filtered ? eq(customers.id, scope.scopeId!) : undefined,
+        q ? or(like(customers.name, `%${q}%`), like(customers.code, `%${q}%`), like(customers.taxId, `%${q}%`)) : undefined,
+      ),
     );
 
   return (
@@ -38,6 +42,7 @@ export default async function CustomersPage({
           </form>
         }
       />
+      {!scope.filtered && <div className="mb-5"><CustomerForm /></div>}
       <SimpleTable
         rows={rows}
         empty="尚無客戶資料"

@@ -4,6 +4,7 @@ import { inventory, inventoryTransactions, products, warehouses } from "@/db/sch
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { formatDate } from "@/lib/utils";
+import { InventoryForm } from "./inventory-form";
 
 export const instant = false;
 
@@ -35,6 +36,7 @@ export default async function InventoryPage() {
         }
       />
 
+      <InventoryForm products={productRows} warehouses={warehouseRows} />
       <div className="mb-6">
         <div className="mb-3 text-sm font-semibold text-[#26223d]">現況庫存</div>
         <SimpleTable

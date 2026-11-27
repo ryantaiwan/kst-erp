@@ -3,6 +3,7 @@ import { SimpleTable } from "@/components/simple-table";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { getReceivables } from "@/lib/receivables";
 import { PaymentForm } from "./payment-form";
+import { ReminderButton } from "./reminder-button";
 
 export const instant = false;
 
@@ -60,6 +61,7 @@ export default async function ReceivablesPage() {
             ),
           },
           { key: "status", label: "狀態", render: (r) => r.invoice.status },
+          { key: "remind", label: "提醒", render: (r) => r.dueCents > 0 ? <ReminderButton invoiceId={r.invoice.id} no={r.invoice.invoiceNo} /> : "—" },
         ]}
       />
     </>

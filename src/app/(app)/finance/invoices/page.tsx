@@ -4,6 +4,7 @@ import { invoices } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { InvoiceForm, VoidButton } from "./invoice-form";
 
 export const instant = false;
 
@@ -45,6 +46,7 @@ export default async function InvoicesPage({
           </form>
         }
       />
+      <div className="mb-5"><InvoiceForm /></div>
       <SimpleTable
         rows={rows}
         empty="尚無發票資料"
@@ -55,6 +57,7 @@ export default async function InvoicesPage({
           { key: "amount", label: "金額", render: (r) => formatMoney(r.amountCents) },
           { key: "tax", label: "稅金", render: (r) => formatMoney(r.taxCents) },
           { key: "status", label: "狀態", render: (r) => r.status },
+          { key: "act", label: "作業", render: (r) => r.status === "void" ? "—" : <VoidButton id={r.id} /> },
         ]}
       />
     </>

@@ -4,6 +4,7 @@ import { products } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { formatMoney } from "@/lib/utils";
+import { ProductForm } from "./product-form";
 
 export const instant = false;
 
@@ -35,6 +36,7 @@ export default async function ProductsPage({
           </form>
         }
       />
+      <div className="mb-5"><ProductForm /></div>
       <SimpleTable
         rows={rows}
         empty="尚無商品資料"

@@ -3,6 +3,9 @@ import { db } from "@/db";
 import { suppliers } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
+import { SupplierForm } from "./supplier-form";
+import { getCurrentScope } from "@/lib/scope";
+import { and, eq } from "drizzle-orm";
 
 export const instant = false;
 
@@ -12,13 +15,15 @@ export default async function SuppliersPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q = "" } = await searchParams;
+  const scope = await getCurrentScope();
   const rows = await db
     .select()
     .from(suppliers)
     .where(
-      q
-        ? or(like(suppliers.name, `%${q}%`), like(suppliers.code, `%${q}%`), like(suppliers.platformCode, `%${q}%`))
-        : undefined,
+      and(
+        scope.filtered ? eq(suppliers.id, scope.scopeId!) : undefined,
+        q ? or(like(suppliers.name, `%${q}%`), like(suppliers.code, `%${q}%`), like(suppliers.platformCode, `%${q}%`)) : undefined,
+      ),
     );
 
   return (
@@ -38,6 +43,7 @@ export default async function SuppliersPage({
           </form>
         }
       />
+      {!scope.filtered && <div className="mb-5"><SupplierForm /></div>}
       <SimpleTable
         rows={rows}
         empty="尚無供應商資料"

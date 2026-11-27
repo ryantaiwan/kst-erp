@@ -5,6 +5,7 @@ import { SimpleTable } from "@/components/simple-table";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { getShippableOrders, getShipments } from "./actions";
 import { ShipmentForm } from "./shipment-form";
+import { ReleaseEditor } from "./release-editor";
 
 export const instant = false;
 
@@ -28,6 +29,7 @@ export default async function ShipmentsPage() {
           { key: "date", label: "出貨日", render: (r) => formatDate(r.shipment.shippedAt) },
           { key: "items", label: "品項數", render: (r) => `${r.itemCount} 項 / ${r.totalQty} 單位` },
           { key: "note", label: "備註", render: (r) => r.shipment.note || "—" },
+          { key: "rel", label: "放行單", render: (r) => <ReleaseEditor shipmentId={r.shipment.id} /> },
         ]}
       />
     </>

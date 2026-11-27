@@ -7,6 +7,8 @@ import { SimpleTable } from "@/components/simple-table";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { currentTaxRate } from "./actions";
 import { QuoteForm } from "./quote-form";
+import { getCurrentScope } from "@/lib/scope";
+import { eq } from "drizzle-orm";
 
 export const instant = false;
 
@@ -25,8 +27,11 @@ const STATUS_TONE: Record<string, string> = {
 };
 
 export default async function QuotesPage() {
+  const scope = await getCurrentScope();
   const [rows, customerRows, contactRows, taxRate] = await Promise.all([
-    db.select().from(quotes).orderBy(desc(quotes.createdAt)).limit(200),
+    db.select().from(quotes)
+      .where(scope.filtered ? eq(quotes.customerId, scope.scopeId!) : undefined)
+      .orderBy(desc(quotes.createdAt)).limit(200),
     db.select({ id: customers.id, name: customers.name }).from(customers),
     db.select({ id: customerContacts.id, name: customerContacts.name, customerId: customerContacts.customerId }).from(customerContacts),
     currentTaxRate(),

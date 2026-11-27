@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { formatMoney } from "@/lib/utils";
 import { getInvoiceDateRange, getMonthlyTax, getTaxSummary, type TaxSummaryRow } from "@/lib/tax-summary";
+import { TaxChart } from "./tax-chart";
 
 export const instant = false;
 
@@ -142,7 +143,8 @@ export default async function TaxSummaryPage({
         </table>
       </div>
 
-      <div className="mb-3 text-sm font-semibold text-[#26223d]">月度趨勢（最近 24 個月）</div>
+      <div className="mb-3 mt-6"><TaxChart rows={monthly.slice(-24).map((m) => ({ month: m.month, outputAmount: m.outputAmountCents, inputAmount: m.inputAmountCents }))} /></div>
+      <div className="mb-3 mt-6 text-sm font-semibold text-[#26223d]">月度趨勢（最近 24 個月）</div>
       <div className="overflow-x-auto rounded-xl border border-[#e9e6f3] bg-white">
         <table className="w-full text-[12px]">
           <thead>

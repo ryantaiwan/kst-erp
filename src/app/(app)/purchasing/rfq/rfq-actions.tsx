@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { closeRfq, convertRfqToPo } from "./actions";
+import { sendRfq } from "@/actions/transactions";
 
 export function RfqActions({ rfqId, status }: { rfqId: string; status: string }) {
   const router = useRouter();
@@ -16,6 +17,19 @@ export function RfqActions({ rfqId, status }: { rfqId: string; status: string })
   return (
     <div className="flex items-center gap-2">
       {msg ? <span className="text-[11px] text-[#8c88a6]">{msg}</span> : null}
+      {status === "draft" && (
+        <button
+          onClick={() => startTransition(async () => {
+            setMsg(null);
+            try { await sendRfq(rfqId); setMsg("已發出詢價"); router.refresh(); }
+            catch (e) { setMsg(e instanceof Error ? e.message : "操作失敗"); }
+          })}
+          disabled={pending}
+          className="rounded-md border border-[#e9e6f3] px-2 py-1 text-[11px] text-[#57536e] disabled:opacity-50"
+        >
+          發出
+        </button>
+      )}
       <button
         onClick={() =>
           startTransition(async () => {

@@ -6,6 +6,9 @@ import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { calcTotals } from "@/lib/billing";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { OrderStatusEditor } from "./order-actions";
+import { getCurrentScope } from "@/lib/scope";
+import { eq } from "drizzle-orm";
 
 export const instant = false;
 
@@ -51,8 +54,11 @@ async function createSalesOrder(formData: FormData) {
 }
 
 export default async function SalesOrdersPage() {
+  const scope = await getCurrentScope();
   const [rows, customerRows] = await Promise.all([
-    db.select().from(salesOrders).orderBy(desc(salesOrders.createdAt)).limit(100),
+    db.select().from(salesOrders)
+      .where(scope.filtered ? eq(salesOrders.customerId, scope.scopeId!) : undefined)
+      .orderBy(desc(salesOrders.createdAt)).limit(100),
     db.select().from(customers),
   ]);
 
@@ -92,7 +98,7 @@ export default async function SalesOrdersPage() {
           { key: "subtotal", label: "未稅", render: (r) => formatMoney(r.subtotalCents) },
           { key: "tax", label: "稅金", render: (r) => formatMoney(r.taxCents) },
           { key: "total", label: "總計", render: (r) => formatMoney(r.totalCents) },
-          { key: "status", label: "狀態", render: (r) => r.status },
+          { key: "status", label: "狀態", render: (r) => <OrderStatusEditor id={r.id} status={r.status} /> },
         ]}
       />
     </>

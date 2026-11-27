@@ -23,7 +23,7 @@
 | 财务 | `/finance/invoices` `/finance/ap` `/finance/receivables` `/finance/profit` `/finance/tax-summary` | 销项/进项发票、进项发票对帐、应收帐款与收款登记、利润计算与分润结算、税务汇总报表 |
 | 主数据 | `/master/products` `/master/suppliers` `/master/inventory` | 商品、供应商、库存查询与异动纪录 |
 | 人资 | `/hr` `/hr/employees` `/hr/departments` `/hr/attendance` `/hr/leaves` | 员工主档、部门组织、出勤纪录、请假申请与核准 |
-| 管理 | `/admin/accounts` `/admin/permissions` `/admin/settings` | 帐号管理、角色权限矩阵与功能可见范围、税率/分润设定 |
+| 管理 | `/admin/accounts` `/admin/permissions` `/admin/settings` `/blueprint` `/spec` | 帐号管理、角色权限矩阵、税率/分润/公司资料编辑、技术组合与规格索引 |
 
 业务流已端对端实测：报价单 → 销货订单 → 出货单 → 销项发票 → 部分收款。
 
@@ -125,6 +125,21 @@ LINE Login 回调网址须设为：`https://kst-erp.vercel.app/api/auth/callback
 `package.json` 的 `overrides` 将间接依赖提升至安全版本（`esbuild >= 0.25.12`、`uuid ^11.1.1`、`zod ^4.6.7`），`npm audit` 为 **0 vulnerabilities**。
 
 ## 资料汇入
+
+## 完整功能清单（含后续补齐）
+
+原先「只能看不能改」的页面已全部补上写入功能：
+
+- **系统设定** `/admin/settings`：新增/修改税率（含生效日）、分润公司基本留、公司资料、Google 登入开关。
+- **主数据**：客户、供应商、商品的新增/编辑；库存手动调整（自动写 `inventoryTransactions`）；账号角色/类型/资料范围/状态编辑。
+- **发票管理** `/finance/invoices`：新增发票、作废。
+- **交易动作**：报价单编辑、销货订单状态变更、出货品项 Release No / Serial No 登录、询价单发出、采购订单部分入库。
+- **应收提醒**：以 Resend 寄送催款信（需 `RESEND_API_KEY`）。
+- **资料范围过滤**：`src/lib/scope.ts` 依 `accountType` 与 `dataScope` 过滤客户/供应商侧查询；未绑定的客户/厂商回传哨兵值，**fail-closed** 不泄漏资料。
+- **周边套件**：Sentry（有 DSN 才启用）、Recharts 税务趋势图、报价单确认后 PDF 存档至 Vercel Blob（需 `BLOB_READ_WRITE_TOKEN`）。
+- `/blueprint`、`/spec` 两页补齐（已加入 proxy 保护）。
+
+> 注：Google 登入开关资料库仅作**记录**，实际启用仍需 Vercel 环境变量 `AUTH_ENABLE_GOOGLE=true` 与 Google OAuth 金钥。
 
 ## 人资模组（Phase 4）
 

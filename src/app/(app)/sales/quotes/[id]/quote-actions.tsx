@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { confirmQuote, convertQuoteToSalesOrder } from "../actions";
+import { archiveQuotePdf } from "@/actions/transactions";
 
 export function QuoteActions({ quoteId, status }: { quoteId: string; status: string }) {
   const router = useRouter();
@@ -34,7 +35,11 @@ export function QuoteActions({ quoteId, status }: { quoteId: string; status: str
       </a>
       {status === "draft" ? (
         <button
-          onClick={() => run(() => confirmQuote(quoteId).then(() => ""), "已確認報價單")}
+          onClick={() => run(async () => {
+            await confirmQuote(quoteId);
+            try { const r = await archiveQuotePdf(quoteId); return r.archived ? "PDF 已存档" : ""; }
+            catch { return ""; } // Blob 存档失败不影响确认
+          }, "已確認報價單")}
           disabled={pending}
           className="rounded-lg border border-[#e9e6f3] bg-white px-3 py-2 text-xs text-[#57536e] disabled:opacity-50"
         >

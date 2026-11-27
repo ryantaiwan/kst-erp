@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { getQuoteDetail } from "../actions";
 import { PageHeader } from "@/components/page-header";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { db } from "@/db";
+import { customers } from "@/db/schema";
+import { QuoteEdit } from "./quote-edit";
 import { QuoteActions } from "./quote-actions";
 
 export const instant = false;
@@ -20,6 +23,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   if (!detail) notFound();
 
   const { quote, customer, contact, items } = detail;
+  const allCustomers = await db.select({ id: customers.id, name: customers.name }).from(customers);
 
   return (
     <>
@@ -39,6 +43,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         }
       />
 
+      <QuoteEdit quoteId={quote.id} customerId={quote.customerId} customers={allCustomers} handler={quote.handler ?? ""} note={quote.note ?? ""} validUntil={quote.validUntil ? quote.validUntil.toISOString().slice(0,10) : ""} items={items.map((i) => ({ description: i.description, qty: i.qty, price: i.priceCents / 100 }))} />
       <div className="grid gap-5 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-5">
           <section className="rounded-xl border border-[#e9e6f3] bg-white p-5">

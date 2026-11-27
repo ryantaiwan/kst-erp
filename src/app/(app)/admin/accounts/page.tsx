@@ -4,6 +4,7 @@ import { accounts, roles, users } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { formatDate } from "@/lib/utils";
+import { AccountEditor } from "./account-editor";
 
 export const instant = false;
 
@@ -91,6 +92,7 @@ export default async function AccountsPage() {
             ),
           },
           { key: "created", label: "建立時間", render: (r) => formatDate(r.createdAt) },
+          { key: "edit", label: "作業", render: (r) => <AccountEditor row={{ id: r.id, role: r.role, accountType: r.accountType, dataScope: r.dataScope, status: r.status }} roles={roleRows.map((x) => ({ key: x.key, name: x.name }))} /> },
         ]}
       />
     </>

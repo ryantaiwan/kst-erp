@@ -76,6 +76,8 @@ const groups: NavGroup[] = [
       { label: "庫存查詢", href: "/master/inventory", icon: Boxes, feature: "inventory" },
       { label: "系統設定", href: "/admin/settings", icon: Settings, feature: "settings" },
       { label: "權限設定", href: "/admin/permissions", icon: ShieldCheck, feature: "settings" },
+      { label: "技術組合", href: "/blueprint", icon: ClipboardList, feature: "settings" },
+      { label: "規格索引", href: "/spec", icon: FileText, feature: "settings" },
     ],
   },
 ];
