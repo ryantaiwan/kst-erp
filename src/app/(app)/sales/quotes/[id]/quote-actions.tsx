@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { confirmQuote, convertQuoteToSalesOrder } from "../actions";
 import { archiveQuotePdf } from "@/actions/transactions";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 export function QuoteActions({ quoteId, status }: { quoteId: string; status: string }) {
   const router = useRouter();
@@ -15,10 +16,11 @@ export function QuoteActions({ quoteId, status }: { quoteId: string; status: str
     startTransition(async () => {
       try {
         const extra = await fn();
-        setMsg(extra ? `${ok}：${extra}` : ok);
+        const full = extra ? `${ok}：${extra}` : ok;
+        setMsg(full); notifySuccess(full);
         router.refresh();
       } catch (e) {
-        setMsg(e instanceof Error ? e.message : "操作失敗");
+        setMsg(e instanceof Error ? e.message : "操作失敗"); notifyError(e, "操作失敗");
       }
     });
   };

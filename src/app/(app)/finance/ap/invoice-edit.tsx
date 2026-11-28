@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { deleteInvoice, updateInputInvoice } from "@/actions/transactions";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 type Row = { id: string; invoiceNo: string; invoiceDate: Date; amountCents: number; status: string; paidAt: Date | null };
 const field = "w-full rounded-lg border border-[#e9e6f3] px-2 py-1 text-[11px]";
@@ -20,8 +21,8 @@ export function InvoiceEdit({ row }: { row: Row }) {
       <form action={(fd) => {
         setMsg("");
         startTransition(async () => {
-          try { await updateInputInvoice(fd); setOpen(false); router.refresh(); }
-          catch (e) { setMsg(e instanceof Error ? e.message : "失敗"); }
+          try { await updateInputInvoice(fd); notifySuccess("已儲存"); setOpen(false); router.refresh(); }
+          catch (e) { setMsg(e instanceof Error ? e.message : "失敗"); notifyError(e, "失敗"); }
         });
       }} className="space-y-2 rounded-lg bg-[#fbfaff] p-3">
         <input type="hidden" name="id" value={row.id} />

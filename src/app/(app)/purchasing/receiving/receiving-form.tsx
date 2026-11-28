@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createReceiving } from "./actions";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 type PendingItem = {
   id: string;
@@ -182,17 +183,17 @@ export function ReceivingForm({ orders, warehouses }: { orders: Order[]; warehou
               }));
 
             if (items.length === 0) {
-              setMsg("請至少填寫一筆入庫數量");
+              notifyError("請至少填寫一筆入庫數量");
               return;
             }
 
             startTransition(async () => {
               try {
                 const no = await createReceiving({ poId: orderId, warehouseId, note, items });
-                setMsg(`已建立入庫單 ${no}`);
+                notifySuccess(`已建立入庫單 ${no}`);
                 router.refresh();
               } catch (e) {
-                setMsg(e instanceof Error ? e.message : "入庫失敗");
+                notifyError(e, "入庫失敗");
               }
             });
           }}

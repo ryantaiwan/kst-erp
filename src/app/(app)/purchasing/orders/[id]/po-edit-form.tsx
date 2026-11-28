@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updatePurchaseOrder } from "@/actions/orders";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 type Item = { id: string; description: string; qty: number; receivedQty: number; price: number };
 const field = "w-full rounded-lg border border-[#e9e6f3] px-3 py-2 text-xs text-[#26223d] outline-none focus:border-[#6d4aff]";
@@ -24,8 +25,8 @@ export function PoEditForm({ id, supplierId, status, expectedDate, suppliers, it
     <form action={(fd) => {
       setMsg("");
       startTransition(async () => {
-        try { await updatePurchaseOrder(id, fd); setMsg("已儲存"); router.refresh(); }
-        catch (e) { setMsg(e instanceof Error ? e.message : "儲存失敗"); }
+        try { await updatePurchaseOrder(id, fd); setMsg("已儲存"); notifySuccess("已儲存"); router.refresh(); }
+        catch (e) { setMsg(e instanceof Error ? e.message : "儲存失敗"); notifyError(e, "儲存失敗"); }
       });
     }} className="space-y-4">
       <input type="hidden" name="itemIds" value={items.map((i) => i.id).join(",")} />

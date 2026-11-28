@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Toaster } from "sonner";
+import { FlashMessage } from "@/components/flash-message";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="zh-Hant">
       <body className="min-h-screen bg-[#f7f6fd] text-[#26223d] antialiased">
         {children}
-        <Toaster position="top-right" />
+        <FlashMessage />
       </body>
     </html>
   );

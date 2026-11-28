@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { recordPayment } from "./actions";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 type Invoice = { id: string; no: string; due: number };
 
@@ -60,10 +61,10 @@ export function PaymentForm({ invoices }: { invoices: Invoice[] }) {
             startTransition(async () => {
               try {
                 await recordPayment(invoiceId, cents);
-                setMsg("已登錄收款");
+                setMsg("已登錄收款"); notifySuccess("已登錄收款");
                 router.refresh();
               } catch (e) {
-                setMsg(e instanceof Error ? e.message : "登錄失敗");
+                setMsg(e instanceof Error ? e.message : "登錄失敗"); notifyError(e, "登錄失敗");
               }
             });
           }}

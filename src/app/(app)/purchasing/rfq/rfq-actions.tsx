@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { closeRfq, convertRfqToPo } from "./actions";
 import { sendRfq } from "@/actions/transactions";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 export function RfqActions({ rfqId, status }: { rfqId: string; status: string }) {
   const router = useRouter();
@@ -21,8 +22,8 @@ export function RfqActions({ rfqId, status }: { rfqId: string; status: string })
         <button
           onClick={() => startTransition(async () => {
             setMsg(null);
-            try { await sendRfq(rfqId); setMsg("已發出詢價"); router.refresh(); }
-            catch (e) { setMsg(e instanceof Error ? e.message : "操作失敗"); }
+            try { await sendRfq(rfqId); setMsg("已發出詢價"); notifySuccess("已發出詢價"); router.refresh(); }
+            catch (e) { setMsg(e instanceof Error ? e.message : "操作失敗"); notifyError(e, "操作失敗"); }
           })}
           disabled={pending}
           className="rounded-md border border-[#e9e6f3] px-2 py-1 text-[11px] text-[#57536e] disabled:opacity-50"
@@ -36,10 +37,10 @@ export function RfqActions({ rfqId, status }: { rfqId: string; status: string })
             setMsg(null);
             try {
               const poNo = await convertRfqToPo(rfqId, "");
-              setMsg(`已轉採購單 ${poNo}`);
+              setMsg(`已轉採購單 ${poNo}`); notifySuccess(`已轉採購單 ${poNo}`);
               router.refresh();
             } catch (e) {
-              setMsg(e instanceof Error ? e.message : "轉單失敗");
+              setMsg(e instanceof Error ? e.message : "轉單失敗"); notifyError(e, "轉單失敗");
             }
           })
         }
@@ -54,10 +55,10 @@ export function RfqActions({ rfqId, status }: { rfqId: string; status: string })
             setMsg(null);
             try {
               await closeRfq(rfqId);
-              setMsg("已結案");
+              setMsg("已結案"); notifySuccess("已結案");
               router.refresh();
             } catch (e) {
-              setMsg(e instanceof Error ? e.message : "操作失敗");
+              setMsg(e instanceof Error ? e.message : "操作失敗"); notifyError(e, "操作失敗");
             }
           })
         }

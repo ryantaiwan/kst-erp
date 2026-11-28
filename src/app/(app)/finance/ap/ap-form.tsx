@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { reconcileInputInvoice } from "./actions";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 type Option = { id: string; name: string };
 
@@ -92,10 +93,10 @@ export function ApForm({ suppliers }: { suppliers: Option[] }) {
                 });
                 setInvoiceNo("");
                 setAmount("");
-                setMsg("已登錄進項發票");
+                setMsg("已登錄進項發票"); notifySuccess("已登錄進項發票");
                 router.refresh();
               } catch (e) {
-                setMsg(e instanceof Error ? e.message : "登錄失敗");
+                setMsg(e instanceof Error ? e.message : "登錄失敗"); notifyError(e, "登錄失敗");
               }
             });
           }}

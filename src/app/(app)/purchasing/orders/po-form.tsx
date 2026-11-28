@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createPurchaseOrderAction } from "@/actions/orders";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 const field = "mt-1 block w-full rounded-lg border border-[#e9e6f3] px-3 py-2 text-xs text-[#26223d] outline-none focus:border-[#6d4aff]";
 
@@ -25,10 +26,10 @@ export function PurchaseOrderForm({ suppliers, products }: {
           startTransition(async () => {
             try {
               const no = await createPurchaseOrderAction(fd);
-              setMsg(`已建立 ${no}`);
+              setMsg(`已建立 ${no}`); notifySuccess(`已建立 ${no}`);
               setOpen(false);
               router.refresh();
-            } catch (e) { setMsg(e instanceof Error ? e.message : "新增失敗"); }
+            } catch (e) { setMsg(e instanceof Error ? e.message : "新增失敗"); notifyError(e, "新增失敗"); }
           });
         }} className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <label className="text-xs text-[#8c88a6]">供應商 *

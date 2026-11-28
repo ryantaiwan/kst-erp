@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createRfq } from "./actions";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 type Option = { id: string; name: string };
 type Row = { description: string; qty: string; price: string };
@@ -43,10 +44,10 @@ export function RfqForm({ suppliers }: { suppliers: Option[] }) {
           items,
         });
         setRows([{ ...EMPTY }]);
-        setMsg(`已建立詢價單 ${no}`);
+        setMsg(`已建立詢價單 ${no}`); notifySuccess(`已建立詢價單 ${no}`);
         router.refresh();
       } catch (e) {
-        setMsg(e instanceof Error ? e.message : "建立失敗");
+        setMsg(e instanceof Error ? e.message : "建立失敗"); notifyError(e, "建立失敗");
       }
     });
   }

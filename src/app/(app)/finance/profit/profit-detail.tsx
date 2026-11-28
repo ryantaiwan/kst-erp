@@ -3,6 +3,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateProfitRecord } from "./actions";
 import { formatDate, formatMoney } from "@/lib/utils";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 export type ProfitRow = {
   id: string; sourceId: string; sourceType: string;
@@ -53,8 +54,8 @@ export function ProfitDetail({ row }: { row: ProfitRow }) {
               <form action={(fd) => {
                 setMsg("");
                 startTransition(async () => {
-                  try { await updateProfitRecord(row.id, fd); setEditing(false); setOpen(false); router.refresh(); }
-                  catch (e) { setMsg(e instanceof Error ? e.message : "儲存失敗"); }
+                  try { await updateProfitRecord(row.id, fd); notifySuccess("已儲存"); setEditing(false); setOpen(false); router.refresh(); }
+                  catch (e) { setMsg(e instanceof Error ? e.message : "儲存失敗"); notifyError(e, "儲存失敗"); }
                 });
               }} className="space-y-3">
                 <label className="block text-xs text-[#8c88a6]">業務分潤比例 (%)

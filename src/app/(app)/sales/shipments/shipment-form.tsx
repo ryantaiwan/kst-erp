@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createShipment } from "./actions";
+import { notifyError, notifySuccess } from "@/lib/notify";
 
 type Order = {
   id: string;
@@ -59,10 +60,10 @@ export function ShipmentForm({ orders }: { orders: Order[] }) {
               try {
                 const no = await createShipment(soId, note);
                 setNote("");
-                setMsg(`已建立出貨單 ${no}`);
+                setMsg(`已建立出貨單 ${no}`); notifySuccess(`已建立出貨單 ${no}`);
                 router.refresh();
               } catch (e) {
-                setMsg(e instanceof Error ? e.message : "出貨失敗");
+                setMsg(e instanceof Error ? e.message : "出貨失敗"); notifyError(e, "出貨失敗");
               }
             });
           }}
