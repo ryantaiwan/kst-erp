@@ -6,6 +6,7 @@ import { formatDate, formatMoney } from "@/lib/utils";
 import { db } from "@/db";
 import { customers } from "@/db/schema";
 import { QuoteEdit } from "./quote-edit";
+import { TotalsBlock } from "@/components/totals-block";
 import { QuoteActions } from "./quote-actions";
 
 export const instant = false;
@@ -79,20 +80,14 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
               </tbody>
             </table>
 
-            <div className="mt-4 flex flex-col items-end gap-1 border-t border-[#f1eff7] pt-4 text-xs">
-              <div className="flex w-64 justify-between text-[#8c88a6]">
-                <span>小計（未稅）</span>
-                <span className="text-[#26223d]">{formatMoney(quote.subtotalCents)}</span>
-              </div>
-              <div className="flex w-64 justify-between text-[#8c88a6]">
-                <span>稅金（{(quote.taxRateSnapshot / 100).toFixed(0)}%）</span>
-                <span className="text-[#26223d]">{formatMoney(quote.taxCents)}</span>
-              </div>
-              <div className="flex w-64 justify-between border-t border-[#e9e6f3] pt-1 text-sm font-semibold">
-                <span>合計（含稅）</span>
-                <span className="text-[#5538d6]">{formatMoney(quote.totalCents)}</span>
-              </div>
-            </div>
+            <TotalsBlock
+              className="ml-auto mt-4 w-full border-t border-[#f1eff7] pt-4 sm:w-72"
+              lines={[
+                { label: "小計（未稅）", value: formatMoney(quote.subtotalCents) },
+                { label: `稅金（${(quote.taxRateSnapshot / 100).toFixed(0)}%）`, value: formatMoney(quote.taxCents) },
+                { label: "合計（含稅）", value: formatMoney(quote.totalCents), strong: true, tone: "accent" },
+              ]}
+            />
           </section>
 
           {quote.note ? (

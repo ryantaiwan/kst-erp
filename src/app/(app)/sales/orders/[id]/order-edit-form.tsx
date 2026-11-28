@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateSalesOrder } from "@/actions/orders";
+import { TotalsBlock } from "@/components/totals-block";
 import { notifyError, notifySuccess } from "@/lib/notify";
 
 type Item = { id: string; description: string; qty: number; shippedQty: number; price: number; subtotal: number };
@@ -70,12 +71,15 @@ export function OrderEditForm({ id, customerId, status, expectedShipDate, custom
             </div>
           ))}
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#f1eff7] pt-3 text-xs">
-          <div className="flex gap-4">
-            <span className="text-[#8c88a6]">未稅 {totals.subtotal.toLocaleString("zh-TW")}</span>
-            <span className="text-[#8c88a6]">稅金 {totals.tax.toLocaleString("zh-TW")}</span>
-            <span className="font-semibold text-[#5538d6]">總計 {totals.total.toLocaleString("zh-TW")}</span>
-          </div>
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-[#f1eff7] pt-3 text-xs">
+          <TotalsBlock
+            className="w-full sm:w-72"
+            lines={[
+              { label: "未稅", value: totals.subtotal.toLocaleString("zh-TW", { minimumFractionDigits: 2 }) },
+              { label: "稅金", value: totals.tax.toLocaleString("zh-TW", { minimumFractionDigits: 2 }) },
+              { label: "總計", value: totals.total.toLocaleString("zh-TW", { minimumFractionDigits: 2 }), strong: true, tone: "accent" },
+            ]}
+          />
           <button type="submit" disabled={pending} className="h-9 rounded-lg bg-[#6d4aff] px-4 text-xs font-medium text-white disabled:opacity-50">
             {pending ? "儲存中…" : "儲存變更"}
           </button>

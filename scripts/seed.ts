@@ -37,9 +37,9 @@ async function main() {
   const existingProfit = await db.select().from(profitRules);
   if (existingProfit.length === 0) {
     await db.insert(profitRules).values({
-      companyBasePercent: 65,
+      companyBasePercent: 10,
       effectiveDate: new Date("2026-01-01T00:00:00Z"),
-      note: "公司基本留 65%，業務% 以利益為基數，剩餘回公司",
+      note: "公司基本留 10%，業務% 以利益為基數，剩餘回公司",
     });
   }
 

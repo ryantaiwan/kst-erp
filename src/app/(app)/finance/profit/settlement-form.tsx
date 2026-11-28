@@ -105,9 +105,13 @@ export function SettlementForm({ rows, mode }: { rows: Row[]; mode: "settle" | "
         </tbody>
       </table>
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#f1eff7] bg-[#fbfaff] px-4 py-3">
-        <div className="text-[12px] text-[#57536e]">
-          已選 {selected.size} 筆 · 合計業務分潤 <span className="font-semibold text-[#5538d6]">{formatMoney(totalCommission)}</span>
-          {message && <span className="ml-3 text-[#e05a5a]">{message}</span>}
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-[12px] text-[#57536e]">已選 {selected.size} 筆</span>
+          <div className="ml-auto flex items-center gap-2 text-right">
+            <span className="text-[12px] text-[#8c88a6]">合計業務分潤</span>
+            <span className="text-right font-semibold tabular-nums text-[#5538d6]">{formatMoney(totalCommission)}</span>
+          </div>
+          {message && <span className="text-[11px] text-[#e05a5a]">{message}</span>}
         </div>
         <button
           onClick={submit}

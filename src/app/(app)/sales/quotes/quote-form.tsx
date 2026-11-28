@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createQuote } from "@/app/(app)/sales/quotes/actions";
+import { TotalsBlock } from "@/components/totals-block";
 
 type Option = { id: string; name: string };
 type ContactOption = Option & { customerId: string };
@@ -214,19 +215,14 @@ export function QuoteForm({
         >
           + 新增品項
         </button>
-        <div className="ml-auto flex items-center gap-4 text-xs">
-          <span className="text-[#8c88a6]">未稅小計</span>
-          <span className="font-medium text-[#26223d]">
-            {subtotal.toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
-          <span className="text-[#8c88a6]">稅金</span>
-          <span className="font-medium text-[#26223d]">
-            {tax.toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
-          <span className="text-[#8c88a6]">含稅</span>
-          <span className="font-semibold text-[#5538d6]">
-            {(subtotal + tax).toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
+        <div className="ml-auto w-full sm:w-72">
+          <TotalsBlock
+            lines={[
+              { label: "未稅小計", value: subtotal.toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+              { label: "稅金", value: tax.toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+              { label: "含稅總計", value: (subtotal + tax).toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), strong: true, tone: "accent" },
+            ]}
+          />
         </div>
       </div>
 

@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updatePurchaseOrder } from "@/actions/orders";
+import { TotalsBlock } from "@/components/totals-block";
 import { notifyError, notifySuccess } from "@/lib/notify";
 
 type Item = { id: string; description: string; qty: number; receivedQty: number; price: number };
@@ -68,8 +69,13 @@ export function PoEditForm({ id, supplierId, status, expectedDate, suppliers, it
             </div>
           ))}
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#f1eff7] pt-3 text-xs">
-          <span className="font-semibold text-[#5538d6]">總計 {computed.toLocaleString("zh-TW", { minimumFractionDigits: 2 })}</span>
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-[#f1eff7] pt-3 text-xs">
+          <TotalsBlock
+            className="w-full sm:w-72"
+            lines={[
+              { label: "總計", value: computed.toLocaleString("zh-TW", { minimumFractionDigits: 2 }), strong: true, tone: "accent" },
+            ]}
+          />
           <div className="flex items-center gap-2">
             <button type="submit" disabled={pending} className="h-9 rounded-lg bg-[#6d4aff] px-4 text-xs font-medium text-white disabled:opacity-50">
               {pending ? "儲存中…" : "儲存變更"}
