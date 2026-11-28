@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { formatMoney } from "@/lib/utils";
 import { ProductForm } from "./product-form";
+import { ProductEdit } from "./product-edit";
 
 export const instant = false;
 
@@ -47,6 +48,7 @@ export default async function ProductsPage({
           { key: "cost", label: "成本", render: (r) => formatMoney(r.costCents) },
           { key: "price", label: "售價", render: (r) => formatMoney(r.salePriceCents) },
           { key: "status", label: "狀態", render: (r) => r.status },
+          { key: "edit", label: "作業", render: (r) => <ProductEdit row={r as never} /> },
         ]}
       />
     </>

@@ -155,3 +155,18 @@ export async function updateSupplierById(id: string, formData: FormData) {
   }).where(eq(suppliers.id, id));
   revalidatePath("/master/suppliers");
 }
+
+export async function updateProductById(id: string, formData: FormData) {
+  const sku = str(formData, "sku");
+  const name = str(formData, "name");
+  if (!sku || !name) throw new Error("料號與名稱為必填");
+  await db.update(products).set({
+    sku, name,
+    spec: str(formData, "spec") || null,
+    unit: str(formData, "unit") || "顆",
+    costCents: cents(formData, "cost"),
+    salePriceCents: cents(formData, "price"),
+    status: str(formData, "status") || "active",
+  }).where(eq(products.id, id));
+  revalidatePath("/master/products");
+}
