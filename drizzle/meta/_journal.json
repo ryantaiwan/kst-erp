@@ -15,6 +15,20 @@
       "when": 1795788417754,
       "tag": "0001_hr_module",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795861616502,
+      "tag": "0002_customer_department",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1795900000000,
+      "tag": "0003_contact_department",
+      "breakpoints": true
     }
   ]
 }

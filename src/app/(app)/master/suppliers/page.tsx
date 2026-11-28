@@ -4,6 +4,7 @@ import { suppliers } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { SupplierForm } from "./supplier-form";
+import { SupplierEdit } from "./supplier-edit";
 import { getCurrentScope } from "@/lib/scope";
 import { and, eq } from "drizzle-orm";
 
@@ -54,6 +55,7 @@ export default async function SuppliersPage({
           { key: "taxId", label: "統編", render: (r) => r.taxId ?? "—" },
           { key: "term", label: "付款條件", render: (r) => r.paymentTerm ?? "—" },
           { key: "platform", label: "平台代號", render: (r) => r.platformCode ?? "—" },
+          { key: "edit", label: "作業", render: (r) => <SupplierEdit row={r as never} /> },
         ]}
       />
     </>

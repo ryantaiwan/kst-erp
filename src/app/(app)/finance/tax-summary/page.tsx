@@ -181,8 +181,8 @@ function SummaryCard({
   return (
     <div className="rounded-xl border border-[#e9e6f3] bg-white p-4">
       <div className="mb-2 text-[12px] font-semibold text-[#26223d]">{title}</div>
-      <div className="text-xl font-semibold text-[#5538d6]">{formatMoney(amount)}</div>
-      <div className="mt-2 flex gap-4 text-[11px] text-[#9b96b0]">
+      <div className="text-right text-xl font-semibold tabular-nums text-[#5538d6]">{formatMoney(amount)}</div>
+      <div className="mt-2 flex flex-wrap justify-end gap-x-4 gap-y-1 text-right text-[11px] tabular-nums text-[#9b96b0]">
         <span>{count} 筆</span>
         <span>已紀錄稅額 {formatMoney(tax)}</span>
         <span>推估稅額 {formatMoney(estimatedTax)}</span>
@@ -195,7 +195,7 @@ function KV({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div className="text-[#9b96b0]">{label}</div>
-      <div className="mt-1 font-semibold text-[#26223d]">{value}</div>
+      <div className="mt-1 text-right font-semibold tabular-nums text-[#26223d]">{value}</div>
     </div>
   );
 }

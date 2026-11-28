@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { desc, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { profitRecords } from "@/db/schema";
+import { profitRecords, profitRules } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { SimplePagination } from "@/components/simple-pagination";
@@ -22,12 +22,15 @@ export default async function ProfitPage({
     raw === "settled" || raw === "unsettled" ? raw : "all";
   const page = Math.max(1, Number(pageParam) || 1);
 
-  const [rows, summary, unsettled, total] = await Promise.all([
+  const [rows, summary, unsettled, total, ruleRows] = await Promise.all([
     getProfitRecords(filter, page, 20),
     getProfitSummary(),
     getUnsettledWithCommission(500),
     getProfitRecordsCount(filter),
+    db.select().from(profitRules).orderBy(desc(profitRules.effectiveDate)),
   ]);
+
+  const latestRulePercent = ruleRows[0]?.companyBasePercent ?? 10;
 
   return (
     <>
@@ -44,8 +47,8 @@ export default async function ProfitPage({
       />
 
       <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatBox label="公司基本留" value={formatMoney(summary.companyBaseCents)} />
-        <StatBox label="公司剩餘" value={formatMoney(summary.remainderCents)} />
+        <StatBox label={`公司基本利潤(${latestRulePercent}%)`} value={formatMoney(summary.companyBaseCents)} />
+        <StatBox label="公司訂單利潤" value={formatMoney(summary.remainderCents)} />
         <StatBox label="業務分潤（累計）" value={formatMoney(summary.salespersonCents)} />
         <StatBox
           label="已結算 / 筆數"
@@ -153,7 +156,7 @@ function StatBox({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-[#e9e6f3] bg-white p-4">
       <div className="text-[11px] text-[#9b96b0]">{label}</div>
-      <div className="mt-1 text-lg font-semibold text-[#26223d]">{value}</div>
+      <div className="mt-1 text-right text-lg font-semibold tabular-nums text-[#26223d]">{value}</div>
     </div>
   );
 }

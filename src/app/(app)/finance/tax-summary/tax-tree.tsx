@@ -58,9 +58,9 @@ export function TaxTree({ rows }: { rows: DailyTaxRow[] }) {
                 {yOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 {yg.year} 年
               </span>
-              <span className="flex flex-wrap gap-3 text-[11px] text-[#8c88a6]">
-                <span>銷項 {sum(yDays, "outputCount")} 筆 / {formatMoney(sum(yDays, "outputAmountCents"))}</span>
-                <span>進項 {sum(yDays, "inputCount")} 筆 / {formatMoney(sum(yDays, "inputAmountCents"))}</span>
+              <span className="grid grid-cols-2 gap-x-6 text-right text-[11px] tabular-nums text-[#8c88a6] sm:flex sm:gap-6">
+                <span className="text-right">銷項 {sum(yDays, "outputCount")} 筆 / {formatMoney(sum(yDays, "outputAmountCents"))}</span>
+                <span className="text-right">進項 {sum(yDays, "inputCount")} 筆 / {formatMoney(sum(yDays, "inputAmountCents"))}</span>
               </span>
             </button>
 
@@ -79,9 +79,9 @@ export function TaxTree({ rows }: { rows: DailyTaxRow[] }) {
                           {mOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                           {Number(mg.month)} 月
                         </span>
-                        <span className="flex flex-wrap gap-3 text-[11px] text-[#8c88a6]">
-                          <span>銷項 {sum(mg.days, "outputCount")} 筆 / {formatMoney(sum(mg.days, "outputAmountCents"))}</span>
-                          <span>進項 {sum(mg.days, "inputCount")} 筆 / {formatMoney(sum(mg.days, "inputAmountCents"))}</span>
+                        <span className="grid grid-cols-2 gap-x-6 text-right text-[11px] tabular-nums text-[#8c88a6] sm:flex sm:gap-6">
+                          <span className="text-right">銷項 {sum(mg.days, "outputCount")} 筆 / {formatMoney(sum(mg.days, "outputAmountCents"))}</span>
+                          <span className="text-right">進項 {sum(mg.days, "inputCount")} 筆 / {formatMoney(sum(mg.days, "inputAmountCents"))}</span>
                         </span>
                       </button>
                       {mOpen && (

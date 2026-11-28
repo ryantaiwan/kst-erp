@@ -138,3 +138,20 @@ export async function deleteProduct(id: string) {
   await db.delete(products).where(eq(products.id, id));
   revalidatePath("/master/products");
 }
+
+export async function updateSupplierById(id: string, formData: FormData) {
+  const name = str(formData, "name");
+  if (!name) throw new Error("供應商名稱為必填");
+  await db.update(suppliers).set({
+    code: str(formData, "code") || null,
+    name,
+    branchName: str(formData, "branchName") || null,
+    taxId: str(formData, "taxId") || null,
+    zipCode: str(formData, "zipCode") || null,
+    address: str(formData, "address") || null,
+    paymentTerm: str(formData, "paymentTerm") || null,
+    platformCode: str(formData, "platformCode") || null,
+    status: str(formData, "status") || "active",
+  }).where(eq(suppliers.id, id));
+  revalidatePath("/master/suppliers");
+}

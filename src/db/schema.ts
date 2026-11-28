@@ -114,6 +114,7 @@ export const customers = sqliteTable("customer", {
 });
 
 export const customerContacts = sqliteTable("customer_contact", {
+  departmentId: text("department_id").references(() => customerDepartments.id),
   id: id(),
   customerId: text("customer_id").notNull().references(() => customers.id),
   name: text("name").notNull(),
@@ -462,5 +463,18 @@ export const leaveRequests = sqliteTable("leave_request", {
   status: text("status").notNull().default("pending"), // pending | approved | rejected | cancelled
   approvedBy: text("approved_by"),
   approvedAt: integer("approved_at", { mode: "timestamp" }),
+  createdAt: createdAt(),
+});
+
+/* ---------- 客戶內部組織（Phase 5） ---------- */
+
+export const customerDepartments = sqliteTable("customer_department", {
+  id: id(),
+  customerId: text("customer_id").notNull().references(() => customers.id, { onDelete: "cascade" }),
+  parentId: text("parent_id"),
+  name: text("name").notNull(),
+  code: text("code"),
+  manager: text("manager"),
+  note: text("note"),
   createdAt: createdAt(),
 });

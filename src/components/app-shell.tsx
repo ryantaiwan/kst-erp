@@ -122,7 +122,11 @@ function SidebarContent({
             <div key={group.label} className="mb-4">
               <div className="mb-1 px-3 text-[10px] tracking-widest text-[#aaa5bd]">{group.label}</div>
               {items.map((item) => {
-                const active = pathname === item.href;
+                // 進入子頁面（如 /sales/orders/[id]）時，上層選單仍視為目前功能
+                // 首頁 "/" 例外，避免所有路徑都配對到
+                const active = item.href === "/"
+                  ? pathname === "/"
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
                 const Icon = item.icon;
                 return (
                   <Link

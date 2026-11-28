@@ -22,7 +22,7 @@
 | 采购 | `/purchasing/rfq` `/purchasing/orders` `/purchasing/receiving` | 询价单、采购订单（新增/详情/编辑/列印，入库连动）、入库作业（回写库存） |
 | 财务 | `/finance/invoices` `/finance/ap` `/finance/receivables` `/finance/profit` `/finance/tax-summary` | 销项/进项发票（查看/编辑/删除）、进项对帐、应收帐款（详情/编辑/收款）、利润计算与分润结算、税务汇总（年/月/日阶层展开） |
 | 主数据 | `/master/products` `/master/suppliers` `/master/inventory` | 商品、供应商、库存查询与异动纪录 |
-| 人资 | `/hr` `/hr/employees` `/hr/departments` `/hr/attendance` `/hr/leaves` | 员工主档、部门组织、出勤纪录、请假申请与核准 |
+| 人资 | `/hr` `/hr/employees` `/hr/departments` `/hr/attendance` `/hr/leaves` | 员工主档（新增/编辑/删除）、部门组织、出勤纪录、请假申请与核准 |
 | 管理 | `/admin/accounts` `/admin/permissions` `/admin/settings` `/blueprint` `/spec` | 帐号管理、角色权限矩阵、税率/分润/公司资料编辑、技术组合与规格索引 |
 
 业务流已端对端实测：报价单 → 销货订单 → 出货单 → 销项发票 → 部分收款。
@@ -169,3 +169,15 @@ LINE Login 回调网址须设为：`https://kst-erp.vercel.app/api/auth/callback
 
 - 报价单详情页内嵌 PDF 预览（iframe），可另开新视窗或下载。
 - 销货订单 / 采购订单详情页提供「输出 / 预览」按钮，使用浏览器列印功能输出单据。
+
+## 客户基本资料与两层部门
+
+客户不再是单一公司档：列表点公司名称进入 `/sales/customers/[id]` 详情页，内含三个分页签：
+
+- **基本资料**：代号、名称、统一编号、地址、电话、传真、付款条件、状态
+- **联络人**：可归属到客户内部部门，记录手机/电话/分机/Email/主要联络人
+- **部门组织**：客户公司内部结构，两层（上层部门 → 下级部门），可供联络人归属
+
+资料表：`customer_department`（migration `0002_customer_department.sql`），`customer_contact` 新增 `department_id`（`0003_contact_department.sql`）。删除部门时下级会提升到上一层，联络人的部门会清空。
+
+> 注意：这是**客户公司内部的部门**，与人资模组的 `department`（锋冠科技自己的部门）不同。

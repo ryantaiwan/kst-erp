@@ -53,16 +53,16 @@ export function PoEditForm({ id, supplierId, status, expectedDate, suppliers, it
         <h2 className="mb-3 text-sm font-semibold">品項明細</h2>
         <div className="space-y-2">
           {items.map((it, idx) => (
-            <div key={it.id} className="grid grid-cols-1 gap-2 rounded-lg bg-[#fbfaff] p-3 sm:grid-cols-[1fr_80px_100px_100px]">
+            <div key={it.id} className="grid grid-cols-1 gap-2 rounded-lg bg-[#fbfaff] p-3 sm:grid-cols-[minmax(0,1fr)_72px_96px_96px] lg:grid-cols-[minmax(0,1fr)_80px_110px_110px]">
               <input name={`item_${it.id}_description`} value={it.description}
                 onChange={(e) => setItems(items.map((x, i) => i === idx ? { ...x, description: e.target.value } : x))}
-                className={field} />
+                className={`${field} min-w-0`} />
               <input name={`item_${it.id}_qty`} type="number" min="1" value={it.qty}
                 onChange={(e) => setItems(items.map((x, i) => i === idx ? { ...x, qty: Number(e.target.value) } : x))}
-                className={field} />
+                className={`${field} min-w-0`} />
               <input name={`item_${it.id}_price`} type="number" min="0" step="0.01" value={it.price}
                 onChange={(e) => setItems(items.map((x, i) => i === idx ? { ...x, price: Number(e.target.value) } : x))}
-                className={field} />
+                className={`${field} min-w-0`} />
               <div className="flex items-center text-xs text-[#57536e]">
                 已入 {it.receivedQty}/{it.qty}
               </div>

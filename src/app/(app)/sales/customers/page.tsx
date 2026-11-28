@@ -1,10 +1,10 @@
+import Link from "next/link";
 import { and, eq, like, or } from "drizzle-orm";
 import { db } from "@/db";
 import { customers } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { CustomerForm } from "./customer-form";
-import { CustomerEdit } from "./customer-edit";
 import { getCurrentScope } from "@/lib/scope";
 
 export const instant = false;
@@ -49,12 +49,11 @@ export default async function CustomersPage({
         empty="尚無客戶資料"
         columns={[
           { key: "code", label: "代號", render: (r) => <span className="font-medium text-[#5538d6]">{r.code}</span> },
-          { key: "name", label: "公司名稱", render: (r) => r.name },
+          { key: "name", label: "公司名稱", render: (r) => <Link href={`/sales/customers/${r.id}`} className="font-medium text-[#5538d6] no-underline hover:underline">{r.name}</Link> },
           { key: "taxId", label: "統編", render: (r) => r.taxId ?? "—" },
           { key: "phone", label: "電話", render: (r) => r.phone ?? "—" },
           { key: "address", label: "地址", render: (r) => r.address ?? "—" },
           { key: "status", label: "狀態", render: (r) => r.status },
-          { key: "edit", label: "作業", render: (r) => <CustomerEdit row={r as never} /> },
         ]}
       />
     </>

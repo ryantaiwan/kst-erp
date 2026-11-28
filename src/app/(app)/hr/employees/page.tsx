@@ -4,6 +4,7 @@ import { formatDate, formatMoney } from "@/lib/utils";
 import { getDepartments, getEmployees } from "@/lib/hr";
 import { createEmployee } from "./actions";
 import { EmployeeForm } from "./employee-form";
+import { EmployeeEdit } from "./employee-edit";
 
 export const instant = false;
 
@@ -45,6 +46,7 @@ export default async function EmployeesPage() {
                 </span>
               ),
             },
+            { key: "edit", label: "作業", render: (r) => <EmployeeEdit row={r as never} departments={depts.map((d) => ({ id: d.id, name: d.name }))} /> },
           ]}
         />
       </div>
