@@ -7,6 +7,7 @@ import { RecordBrowser } from "@/components/record-browser";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { getYearsFrom, parsePeriod, type PeriodParams } from "@/lib/period";
 import { InvoiceForm, VoidButton } from "./invoice-form";
+import { DetailButton } from "./detail-button";
 
 export const instant = false;
 
@@ -72,6 +73,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
           { key: "tax", label: "稅金", render: (r) => formatMoney(r.taxCents) },
           { key: "status", label: "狀態", render: (r) => r.status },
           { key: "act", label: "作業", render: (r) => r.status === "void" ? "—" : <VoidButton id={r.id} /> },
+          { key: "detail", label: "內容", render: (r) => <DetailButton row={r as never} /> },
         ]}
       />
     </>

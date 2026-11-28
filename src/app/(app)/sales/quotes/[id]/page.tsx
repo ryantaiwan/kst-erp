@@ -133,6 +133,25 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
           </section>
         </aside>
       </div>
+
+      <section className="mt-5 rounded-xl border border-[#e9e6f3] bg-white p-5">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-[#26223d]">報價單預覽</h2>
+          <a
+            href={`/api/quotes/${quote.id}/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-[#e9e6f3] px-3 py-2 text-xs text-[#57536e] no-underline hover:bg-[#fbfaff]"
+          >
+            另開新視窗 / 下載 PDF
+          </a>
+        </div>
+        <iframe
+          src={`/api/quotes/${quote.id}/pdf`}
+          title={`報價單 ${quote.quoteNo} 預覽`}
+          className="h-[700px] w-full rounded-lg border border-[#f1eff7] bg-white"
+        />
+      </section>
     </>
   );
 }

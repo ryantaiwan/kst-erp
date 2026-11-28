@@ -7,6 +7,7 @@ import { formatDate, formatMoney } from "@/lib/utils";
 import { getYearsFrom, parsePeriod, type PeriodParams } from "@/lib/period";
 import { getInputInvoices } from "./actions";
 import { ApForm } from "./ap-form";
+import { InvoiceEdit } from "./invoice-edit";
 
 export const instant = false;
 
@@ -49,6 +50,7 @@ export default async function ApPage({ searchParams }: { searchParams: Promise<P
           { key: "tax", label: "稅金", render: (r) => formatMoney(r.invoice.taxCents) },
           { key: "status", label: "狀態", render: (r) => r.invoice.status },
           { key: "paidAt", label: "付款日", render: (r) => formatDate(r.invoice.paidAt) },
+          { key: "edit", label: "作業", render: (r) => <InvoiceEdit row={r.invoice} /> },
         ]}
       />
     </>

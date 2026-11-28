@@ -19,8 +19,8 @@
 |---|---|---|
 | 总览 | `/` | 客户 / 供应商 / 商品 / 发票 / 应收未收 KPI、最近报价单、待办提醒 |
 | 业务 | `/sales/quotes` `/sales/orders` `/sales/shipments` `/sales/customers` | 报价单（+PDF 下载）、销货订单、出货作业、客户管理 |
-| 采购 | `/purchasing/rfq` `/purchasing/orders` `/purchasing/receiving` | 询价单、采购订单、入库作业（回写库存） |
-| 财务 | `/finance/invoices` `/finance/ap` `/finance/receivables` `/finance/profit` `/finance/tax-summary` | 销项/进项发票、进项发票对帐、应收帐款与收款登记、利润计算与分润结算、税务汇总报表 |
+| 采购 | `/purchasing/rfq` `/purchasing/orders` `/purchasing/receiving` | 询价单、采购订单（新增/详情/编辑/列印，入库连动）、入库作业（回写库存） |
+| 财务 | `/finance/invoices` `/finance/ap` `/finance/receivables` `/finance/profit` `/finance/tax-summary` | 销项/进项发票（查看/编辑/删除）、进项对帐、应收帐款（详情/编辑/收款）、利润计算与分润结算、税务汇总（年/月/日阶层展开） |
 | 主数据 | `/master/products` `/master/suppliers` `/master/inventory` | 商品、供应商、库存查询与异动纪录 |
 | 人资 | `/hr` `/hr/employees` `/hr/departments` `/hr/attendance` `/hr/leaves` | 员工主档、部门组织、出勤纪录、请假申请与核准 |
 | 管理 | `/admin/accounts` `/admin/permissions` `/admin/settings` `/blueprint` `/spec` | 帐号管理、角色权限矩阵、税率/分润/公司资料编辑、技术组合与规格索引 |
@@ -157,3 +157,15 @@ LINE Login 回调网址须设为：`https://kst-erp.vercel.app/api/auth/callback
 - `C:/Users/profe/Desktop/進銷存開發/鋒冠科技 - 發票記錄表 參考用.xlsx`
 
 并输出 `IMPORT-REPORT.md`。
+
+## 记录浏览默认值
+
+- 应收帐款预设显示**当年度 / 目前期别的前一期**（2026 年 11 月 → 2026 年第 5 期）。
+- 期别下拉由近至远排列（第 6 期 → 第 1 期）。
+- 其他发票页面预设为全部年度，可自行筛选。
+- 税务汇总报表以「年 → 月 → 日」三层展开，点年度与月份逐层开启，避免资料过多难以阅读。
+
+## 单据输出与预览
+
+- 报价单详情页内嵌 PDF 预览（iframe），可另开新视窗或下载。
+- 销货订单 / 采购订单详情页提供「输出 / 预览」按钮，使用浏览器列印功能输出单据。

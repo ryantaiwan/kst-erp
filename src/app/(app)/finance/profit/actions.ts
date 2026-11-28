@@ -65,3 +65,32 @@ export async function unSettleProfit(ids: string[]) {
 
   revalidatePath("/finance/profit");
 }
+
+/** 更新利潤紀錄的來源單號與備註等基本資料（透過利潤重算維持公式一致） */
+export async function updateProfitRecord(id: string, formData: FormData) {
+  const percent = Number(formData.get("salespersonPercent"));
+  if (!Number.isFinite(percent) || percent < 0 || percent > 100) {
+    throw new Error("業務分潤比例必須在 0–100 之間");
+  }
+  const [row] = await db.select().from(profitRecords).where(inArray(profitRecords.id, [id])).limit(1);
+  if (!row) throw new Error("找不到利潤紀錄");
+
+  const companyBasePercent = row.profitCents > 0
+    ? Math.round((row.companyBaseCents / row.profitCents) * 100)
+    : 65;
+  const result = calcProfit({
+    revenueCents: row.revenueCents,
+    costCents: row.costCents,
+    companyBasePercent,
+    salespersonPercent: percent,
+  });
+
+  await db.update(profitRecords).set({
+    salespersonPercent: percent,
+    salespersonCents: result.salespersonCents,
+    companyBaseCents: result.companyBaseCents,
+    companyRemainderCents: result.companyRemainderCents,
+  }).where(inArray(profitRecords.id, [id]));
+
+  revalidatePath("/finance/profit");
+}

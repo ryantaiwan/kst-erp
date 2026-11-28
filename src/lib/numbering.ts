@@ -91,3 +91,17 @@ export function nextRfqNo(date: Date, existingNos: string[]) {
   while (used.has(seq)) seq += 1;
   return `${prefix}${pad(seq, 3)}`;
 }
+
+/** 銷貨訂單號：SO + 民國年 + 月 + 日 + 流水 */
+export function nextSoNo(date: Date, existingNos: string[]) {
+  const prefix = `SO${pad(rocYear(date), 3)}${pad(date.getUTCMonth() + 1, 2)}${pad(date.getUTCDate(), 2)}`;
+  const used = new Set(
+    existingNos
+      .filter((no) => no.startsWith(prefix))
+      .map((no) => Number(no.slice(prefix.length)))
+      .filter((n) => Number.isFinite(n)),
+  );
+  let seq = 1;
+  while (used.has(seq)) seq += 1;
+  return `${prefix}${pad(seq, 3)}`;
+}

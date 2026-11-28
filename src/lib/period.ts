@@ -14,6 +14,17 @@ export const PERIODS = [
 
 export const PAGE_SIZE = 20;
 
+/** 目前日期所屬的雙月期別（1-2 月為第 1 期） */
+export function currentPeriod(date = new Date()) {
+  return Math.floor(date.getUTCMonth() / 2) + 1;
+}
+
+/** 前期別：第 1 期的前一期是去年的第 6 期 */
+export function previousPeriod(date = new Date()) {
+  const p = currentPeriod(date);
+  return p === 1 ? { year: date.getUTCFullYear() - 1, period: 6 } : { year: date.getUTCFullYear(), period: p - 1 };
+}
+
 export type PeriodParams = {
   year?: string;
   period?: string;

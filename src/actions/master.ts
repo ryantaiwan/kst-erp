@@ -123,3 +123,18 @@ export async function adjustInventory(formData: FormData) {
 
   revalidatePath("/master/inventory");
 }
+
+export async function deleteCustomer(id: string) {
+  await db.delete(customers).where(eq(customers.id, id));
+  revalidatePath("/sales/customers");
+}
+
+export async function deleteSupplier(id: string) {
+  await db.delete(suppliers).where(eq(suppliers.id, id));
+  revalidatePath("/master/suppliers");
+}
+
+export async function deleteProduct(id: string) {
+  await db.delete(products).where(eq(products.id, id));
+  revalidatePath("/master/products");
+}

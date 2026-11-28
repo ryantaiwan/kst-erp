@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { formatMoney } from "@/lib/utils";
-import { getInvoiceDateRange, getMonthlyTax, getTaxSummary, type TaxSummaryRow } from "@/lib/tax-summary";
+import { getDailyTax, getInvoiceDateRange, getMonthlyTax, getTaxSummary, type TaxSummaryRow } from "@/lib/tax-summary";
 import { TaxChart } from "./tax-chart";
+import { TaxTree } from "./tax-tree";
 
 export const instant = false;
 
@@ -13,9 +14,10 @@ export default async function TaxSummaryPage({
 }) {
   const { from, to } = await searchParams;
   const params = { from, to };
-  const [summary, monthly, range] = await Promise.all([
+  const [summary, monthly, daily, range] = await Promise.all([
     getTaxSummary(params),
     getMonthlyTax(params),
+    getDailyTax(params),
     getInvoiceDateRange(),
   ]);
 
@@ -144,35 +146,8 @@ export default async function TaxSummaryPage({
       </div>
 
       <div className="mb-3 mt-6"><TaxChart rows={monthly.slice(-24).map((m) => ({ month: m.month, outputAmount: m.outputAmountCents, inputAmount: m.inputAmountCents }))} /></div>
-      <div className="mb-3 mt-6 text-sm font-semibold text-[#26223d]">月度趨勢（最近 24 個月）</div>
-      <div className="overflow-x-auto rounded-xl border border-[#e9e6f3] bg-white">
-        <table className="w-full text-[12px]">
-          <thead>
-            <tr className="bg-[#fbfaff] text-left text-[#9b96b0]">
-              <th className="px-4 py-3 font-medium">月份</th>
-              <th className="px-4 py-3 text-right font-medium">銷項筆數</th>
-              <th className="px-4 py-3 text-right font-medium">銷項金額</th>
-              <th className="px-4 py-3 text-right font-medium">進項筆數</th>
-              <th className="px-4 py-3 text-right font-medium">進項金額</th>
-              <th className="px-4 py-3 text-right font-medium">差額</th>
-            </tr>
-          </thead>
-          <tbody>
-            {monthly.slice(-24).reverse().map((m) => (
-              <tr key={m.month} className="border-t border-[#f1eff7]">
-                <td className="px-4 py-3 font-medium text-[#5538d6]">{m.month}</td>
-                <td className="px-4 py-3 text-right">{m.outputCount}</td>
-                <td className="px-4 py-3 text-right">{formatMoney(m.outputAmountCents)}</td>
-                <td className="px-4 py-3 text-right">{m.inputCount}</td>
-                <td className="px-4 py-3 text-right">{formatMoney(m.inputAmountCents)}</td>
-                <td className={`px-4 py-3 text-right ${m.outputAmountCents - m.inputAmountCents >= 0 ? "text-[#0d8a45]" : "text-[#e05a5a]"}`}>
-                  {formatMoney(m.outputAmountCents - m.inputAmountCents)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <div className="mb-3 mt-6 text-sm font-semibold text-[#26223d]">年 / 月 / 日 明細（點年度與月份展開）</div>
+      <TaxTree rows={daily} />
     </>
   );
 }

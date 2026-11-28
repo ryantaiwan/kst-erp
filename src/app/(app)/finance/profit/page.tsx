@@ -8,6 +8,7 @@ import { SimplePagination } from "@/components/simple-pagination";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { getProfitRecords, getProfitRecordsCount, getProfitSummary, getUnsettledWithCommission, type ProfitFilter } from "@/lib/profit";
 import { SettlementForm } from "./settlement-form";
+import { ProfitDetail } from "./profit-detail";
 
 export const instant = false;
 
@@ -76,7 +77,7 @@ export default async function ProfitPage({
         rows={rows}
         empty="尚無利潤資料"
         columns={[
-          { key: "id", label: "來源單號", render: (r) => <span className="font-medium text-[#5538d6]">{r.sourceId}</span> },
+          { key: "id", label: "來源單號", render: (r) => <ProfitDetail row={r as never} /> },
           { key: "revenue", label: "未稅金額", render: (r) => formatMoney(r.revenueCents) },
           { key: "cost", label: "成本", render: (r) => formatMoney(r.costCents) },
           { key: "profit", label: "利潤", render: (r) => <span className="text-[#0d8a45]">{formatMoney(r.profitCents)}</span> },

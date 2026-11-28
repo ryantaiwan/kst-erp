@@ -15,6 +15,8 @@ export function RecordBrowser({
   total,
   basePath,
   extraFilters,
+  defaultYear,
+  defaultPeriod,
 }: {
   years: number[];
   params: PeriodParams;
@@ -22,8 +24,13 @@ export function RecordBrowser({
   basePath: string;
   /** 額外保留的篩選參數（如 type、q、filter） */
   extraFilters?: Record<string, string | undefined>;
+  /** 無 URL 參數時的預設值（如應收帳款預設當年度前期別） */
+  defaultYear?: number;
+  defaultPeriod?: number;
 }) {
   const info = pageInfo(params.page ? Number(params.page) : 1, total);
+  const selectedYear = params.year ?? (defaultYear ? String(defaultYear) : "");
+  const selectedPeriod = params.period ?? (defaultPeriod ? String(defaultPeriod) : "0");
   const withExtra = (page: number) => {
     const q = new URLSearchParams();
     if (params.year) q.set("year", params.year);
@@ -40,16 +47,16 @@ export function RecordBrowser({
       <form action={basePath} method="get" className="flex flex-wrap items-end gap-2">
         <label className="text-[11px] text-[#8c88a6]">
           年度
-          <select name="year" defaultValue={params.year ?? ""} className={`mt-1 block w-28 ${selectCls}`}>
+          <select name="year" defaultValue={selectedYear} className={`mt-1 block w-28 ${selectCls}`}>
             <option value="">全部年度</option>
             {years.map((y) => <option key={y} value={y}>{y} 年</option>)}
           </select>
         </label>
         <label className="text-[11px] text-[#8c88a6]">
           期別
-          <select name="period" defaultValue={params.period ?? "0"} className={`mt-1 block w-28 ${selectCls}`}>
+          <select name="period" defaultValue={selectedPeriod} className={`mt-1 block w-28 ${selectCls}`}>
             <option value="0">全年期</option>
-            {PERIODS.map((p) => <option key={p.value} value={p.value}>第 {p.value} 期（{p.label}）</option>)}
+            {[...PERIODS].reverse().map((p) => <option key={p.value} value={p.value}>第 {p.value} 期（{p.label}）</option>)}
           </select>
         </label>
         {Object.entries(extraFilters ?? {}).map(([k, v]) => (

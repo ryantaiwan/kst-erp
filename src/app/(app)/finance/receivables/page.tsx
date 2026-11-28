@@ -3,15 +3,22 @@ import { SimpleTable } from "@/components/simple-table";
 import { RecordBrowser } from "@/components/record-browser";
 import { formatDate, formatMoney } from "@/lib/utils";
 import { getReceivables, getReceivablesCount } from "@/lib/receivables";
-import { getYearsFrom, parsePeriod, type PeriodParams } from "@/lib/period";
+import { getYearsFrom, parsePeriod, previousPeriod, type PeriodParams } from "@/lib/period";
 import { PaymentForm } from "./payment-form";
 import { ReminderButton } from "./reminder-button";
+import { DetailButton } from "./detail-button";
 
 export const instant = false;
 
 export default async function ReceivablesPage({ searchParams }: { searchParams: Promise<PeriodParams> }) {
   const params = await searchParams;
-  const { from, to, page } = parsePeriod(params);
+  // 應收帳款預設「當年度 / 目前期別的前一期」
+  const hasParams = params.year !== undefined || params.period !== undefined;
+  const dflt = previousPeriod();
+  const effective: PeriodParams = hasParams
+    ? params
+    : { ...params, year: String(dflt.year), period: String(dflt.period) };
+  const { from, to, page } = parsePeriod(effective);
 
   // 統計與收款表單用全部資料（不受期間篩選影響），明細表才分頁
   const [allRows, rows, total, years] = await Promise.all([
@@ -43,7 +50,7 @@ export default async function ReceivablesPage({ searchParams }: { searchParams: 
       <PaymentForm invoices={outstanding.map((r) => ({ id: r.invoice.id, no: r.invoice.invoiceNo, due: r.dueCents }))} />
 
       <div className="mb-3 mt-6 text-sm font-semibold text-[#26223d]">應收明細</div>
-      <RecordBrowser years={years} params={params} total={total} basePath="/finance/receivables" />
+      <RecordBrowser years={years} params={effective} total={total} basePath="/finance/receivables" />
 
       <SimpleTable
         rows={rows}
@@ -74,6 +81,7 @@ export default async function ReceivablesPage({ searchParams }: { searchParams: 
           },
           { key: "status", label: "狀態", render: (r) => r.invoice.status },
           { key: "remind", label: "提醒", render: (r) => r.dueCents > 0 ? <ReminderButton invoiceId={r.invoice.id} no={r.invoice.invoiceNo} /> : "—" },
+          { key: "detail", label: "內容", render: (r) => <DetailButton row={r.invoice as never} /> },
         ]}
       />
     </>

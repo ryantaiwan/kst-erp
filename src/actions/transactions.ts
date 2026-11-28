@@ -263,3 +263,34 @@ export async function archiveQuotePdf(quoteId: string) {
   revalidatePath(`/sales/quotes/${quoteId}`);
   return { archived: true, url: blob.url };
 }
+
+/* ---------- 進項發票編輯 ---------- */
+
+export async function updateInputInvoice(formData: FormData) {
+  const id = str(formData, "id");
+  if (!id) throw new Error("缺少發票 ID");
+  const amount = Math.round(Number(str(formData, "amount")) * 100);
+  const date = d(formData, "invoiceDate");
+  if (amount <= 0 || !date) throw new Error("金額與日期為必填");
+
+  await db.update(invoices).set({
+    invoiceNo: str(formData, "invoiceNo"),
+    invoiceDate: date,
+    amountCents: amount,
+    taxCents: Math.round(amount * 0.05),
+    status: str(formData, "status") || "待付款",
+    paidAt: str(formData, "paidAt") ? new Date(`${str(formData, "paidAt")}T00:00:00Z`) : null,
+  }).where(eq(invoices.id, id));
+
+  revalidatePath("/finance/ap");
+  revalidatePath("/finance/invoices");
+  revalidatePath("/finance/tax-summary");
+}
+
+export async function deleteInvoice(id: string) {
+  await db.delete(invoices).where(eq(invoices.id, id));
+  revalidatePath("/finance/ap");
+  revalidatePath("/finance/invoices");
+  revalidatePath("/finance/tax-summary");
+  revalidatePath("/finance/receivables");
+}

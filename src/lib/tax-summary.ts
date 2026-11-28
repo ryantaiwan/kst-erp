@@ -121,3 +121,45 @@ export async function getInvoiceDateRange() {
   const iso = (n: number | null) => (n ? new Date(n * 1000).toISOString().slice(0, 10) : "");
   return { min: iso(row?.min ?? null), max: iso(row?.max ?? null) };
 }
+
+export type DailyTaxRow = {
+  date: string;
+  outputCount: number;
+  outputAmountCents: number;
+  inputCount: number;
+  inputAmountCents: number;
+};
+
+/** 依日彙總銷項 / 進項（供年月日三層展開） */
+export async function getDailyTax(params: TaxSummaryParams = {}): Promise<DailyTaxRow[]> {
+  const conditions = dateBounds(params);
+  const where = conditions.length ? and(...conditions) : undefined;
+
+  const rows = await db
+    .select({
+      date: sql<string>`strftime('%Y-%m-%d', ${invoices.invoiceDate}, 'unixepoch')`,
+      type: invoices.type,
+      count: sql<number>`count(*)`,
+      amountCents: sql<number>`coalesce(sum(${invoices.amountCents}), 0)`,
+    })
+    .from(invoices)
+    .where(and(where, sql`${invoices.status} not in ('void', '作廢')`))
+    .groupBy(sql`strftime('%Y-%m-%d', ${invoices.invoiceDate}, 'unixepoch')`, invoices.type)
+    .orderBy(sql`strftime('%Y-%m-%d', ${invoices.invoiceDate}, 'unixepoch')`);
+
+  const map = new Map<string, DailyTaxRow>();
+  for (const r of rows) {
+    const row = map.get(r.date) ?? {
+      date: r.date, outputCount: 0, outputAmountCents: 0, inputCount: 0, inputAmountCents: 0,
+    };
+    if (r.type === "output") {
+      row.outputCount = r.count;
+      row.outputAmountCents = r.amountCents;
+    } else {
+      row.inputCount = r.count;
+      row.inputAmountCents = r.amountCents;
+    }
+    map.set(r.date, row);
+  }
+  return [...map.values()];
+}

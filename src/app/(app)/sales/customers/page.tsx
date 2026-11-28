@@ -4,6 +4,7 @@ import { customers } from "@/db/schema";
 import { PageHeader } from "@/components/page-header";
 import { SimpleTable } from "@/components/simple-table";
 import { CustomerForm } from "./customer-form";
+import { CustomerEdit } from "./customer-edit";
 import { getCurrentScope } from "@/lib/scope";
 
 export const instant = false;
@@ -53,6 +54,7 @@ export default async function CustomersPage({
           { key: "phone", label: "電話", render: (r) => r.phone ?? "—" },
           { key: "address", label: "地址", render: (r) => r.address ?? "—" },
           { key: "status", label: "狀態", render: (r) => r.status },
+          { key: "edit", label: "作業", render: (r) => <CustomerEdit row={r as never} /> },
         ]}
       />
     </>
